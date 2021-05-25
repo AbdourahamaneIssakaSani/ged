@@ -988,7 +988,7 @@
     --bs-gray: #6B7280;
     --bs-gray-dark: #374151;
     --bs-primary: #262B40;
-    --bs-secondary: #f3b773;
+    --bs-secondary: #f9A826;
     --bs-tertiary: #2CA58D;
     --bs-dark: #262B40;
     --bs-success: #05A677;
@@ -1454,7 +1454,12 @@ progress {
     font-size: 1.25rem;
     font-weight: 300;
 }
-
+.primary-color{
+    color: var(--bs-primary) !important;
+}
+.secondary-color{
+    color: var(--bs-secondary) !important;
+}
 .display-1 {
     font-size: calc(1.625rem + 4.5vw);
     font-weight: 600;
