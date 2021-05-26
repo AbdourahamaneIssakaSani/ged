@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-05-26T10:51:14.075Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.62" etag="4hYIlVHGtS5Zd3XCFpAC" version="14.7.1" type="github">
+<mxfile host="app.diagrams.net" modified="2021-05-26T13:44:17.747Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36 Edg/90.0.818.62" etag="AHxouVv2nqE8B0jg80jM" version="14.7.1" type="github">
   <diagram id="YnhViaOy70a9gDw9ipRo" name="Page-1">
     <mxGraphModel dx="1650" dy="1030" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -8,10 +8,10 @@
           <mxGeometry x="123.5" y="50" width="644.5" height="750" as="geometry" />
         </mxCell>
         <mxCell id="imNFoqBUXam9y-mzrash-1" value="Voir à propos" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="238" y="50" width="140" height="70" as="geometry" />
+          <mxGeometry x="240" y="60" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="imNFoqBUXam9y-mzrash-5" value="Créer un compte" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="310" y="120" width="140" height="70" as="geometry" />
+          <mxGeometry x="300" y="140" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="imNFoqBUXam9y-mzrash-14" value="Visiteur" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" parent="1" vertex="1">
           <mxGeometry x="36" y="80" width="30" height="60" as="geometry" />
@@ -29,10 +29,10 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="IhvLKMLCWToySPis5Gxd-1" value="" style="whiteSpace=wrap;html=1;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="125.5" y="791" width="644.5" height="357" as="geometry" />
+          <mxGeometry x="125.5" y="791" width="644.5" height="249" as="geometry" />
         </mxCell>
         <mxCell id="IhvLKMLCWToySPis5Gxd-3" value="Téléverser un fichier/dossier" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="580" y="220" width="140" height="70" as="geometry" />
+          <mxGeometry x="530" y="230" width="140" height="70" as="geometry" />
         </mxCell>
         <mxCell id="IhvLKMLCWToySPis5Gxd-6" value="Télécharger un fichier/dossier" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="160" y="170" width="140" height="70" as="geometry" />
