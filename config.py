@@ -1,3 +1,4 @@
 DEBUG = True
 BOOTSTRAP_SERVE_LOCAL = True
-SECRET_KEY = 'DSKJVFV'
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:abdourahamane@localhost/ged_db'
+SECRET_KEY = '5d1a8fdaa2dc7409f51493cf25ba03b9'
