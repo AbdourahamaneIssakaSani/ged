@@ -1,11 +1,12 @@
 from flask import Flask
-from flask_bcrypt import Bcrypt
 from flask_bootstrap import Bootstrap
 from flask_assets import Environment
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
 
 db = SQLAlchemy()
-bcrypt = Bcrypt()
+login_manager = LoginManager()
 
 
 def manage_database(app):
@@ -24,15 +25,17 @@ def create_app():
     app.config.from_object('config')
     Bootstrap(app)
     manage_database(app)
-    bcrypt.init_app(app)
+    login_manager.init_app(app)
     assets = Environment()
     assets.init_app(app)
     with app.app_context():
         from app.auth.auth import auth_bp
         from app.base.base import base_bp
+        from app.user.routes import user_bp
         from .assets import compile_assets
         app.register_blueprint(auth_bp)
         app.register_blueprint(base_bp)
+        app.register_blueprint(user_bp)
         compile_assets(assets)
 
         return app
