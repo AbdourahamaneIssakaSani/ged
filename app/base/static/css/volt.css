@@ -25449,7 +25449,7 @@ textarea.form-control-lg {
 }
 
 .content {
-    overflow: visible;
+    overflow-x: hidden;
     padding: 0 1rem 0 1rem;
     transition: all 0.3s;
 }

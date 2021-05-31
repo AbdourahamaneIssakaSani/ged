@@ -3,10 +3,13 @@ from flask_bootstrap import Bootstrap
 from flask_assets import Environment
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+bcrypt = Bcrypt()
+migrate = Migrate()
 
 
 def manage_database(app):
@@ -14,7 +17,7 @@ def manage_database(app):
     def initialize():
         db.init_app(app)
         db.create_all()
-
+    # // TODO: fix database shutdown
     ''''@app.teardown_request
     def shutdown():
         db.session.remove()'''
@@ -22,10 +25,17 @@ def manage_database(app):
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config')
+    app.config.from_object('config') # // TODO: sensitive data into instance/config
     Bootstrap(app)
-    manage_database(app)
+    bcrypt.init_app(app)
+    # manage_database(app)
+    db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
+    login_manager.blueprint_login_views = "auth_bp.login"
+    login_manager.login_message_category = "info"
+    login_manager.login_message = "Connectez-vous avant de continuer !"
+    # //TODO: regroup login_manager in a function
     assets = Environment()
     assets.init_app(app)
     with app.app_context():

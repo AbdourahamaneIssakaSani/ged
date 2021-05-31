@@ -20,11 +20,15 @@
                                 </h1>
                                 <br />
                                 <p>
-                                    {% if msg %}
-                                        {{ msg | safe }}
-                                    {% else %}
-                                        Remplissez tous les champs
-                                    {% endif %}                                     
+                                    {% with messages = get_flashed_messages() %}
+                                        {% if messages %}
+                                            {% for msg in messages %}
+                                                <span class="alert-{{ msg.category }}">{{ msg }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            Remplissez tous les champs
+                                        {% endif %}
+                                    {% endwith %}
                                 </p> 
                             </div>
                             {% include 'register-form.html' %}

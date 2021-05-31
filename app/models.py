@@ -1,4 +1,4 @@
-from app import db, login_manager
+from app import db, login_manager, bcrypt
 from flask_login import UserMixin
 
 
@@ -18,19 +18,19 @@ class User(db.Model, UserMixin):
         self.first_name = f_name
         self.last_name = l_name
         self.email = email
-        self.password_hash = pwd
+        self.password = pwd
 
-    """"@property
+    @property
     def password(self):
         return self.password
 
     @password.setter
     def password(self, plain_text_pwd):
-        self.password_hash = bcrypt.generate_password_hash(plain_text_pwd).decode('utf-8')
+        self.password_hash = bcrypt.generate_password_hash(plain_text_pwd)
 
-    @property
+
     def verify_password(self, provided_password):
-        return check_password_hash(self.password, provided_password)"""
+        return bcrypt.check_password_hash(self.password_hash, provided_password)
 
 
 ''''class Account(db.Model):
