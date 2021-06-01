@@ -81,13 +81,13 @@
                         <div class="multi-level collapse " role="list" id="submenu-app" aria-expanded="false">
                             <ul class="flex-column nav">
                                 <li class="nav-item ">
-                                    <a class="nav-link" href="">
+                                    <a class="nav-link" href="{{ url_for('user_bp.new_file') }}">
                                         <span class="sidebar-icon"><span class="fas fa-file-import"></span></span>
                                         <span class="sidebar-text">Importer des fichiers</span>
                                     </a>
                                 </li>
                                 <li class="nav-item ">
-                                    <a class="nav-link" href="">
+                                    <a class="nav-link" href="{{ url_for('user_bp.import_folder') }}">
                                         <span class="sidebar-icon"><span class="fas fa-upload"></span></span>
                                         <span class="sidebar-text">Importer un dossier</span>
                                     </a>
@@ -102,15 +102,21 @@
                         </a>
                     </li>
                     <li class="nav-item ">
-                        <a href="/transactions.html" class="nav-link">
-                            <span class="sidebar-icon"><span class="fas fa-trash"></span></span>
-                            <span class="sidebar-text">Corbeille</span>
+                        <a href="{{ url_for('user_bp.new_space') }}" class="nav-link">
+                            <span class="sidebar-icon"><span class="fas fa-users"></span></span>
+                            <span class="sidebar-text">Créer un espace</span>
                         </a>
                     </li>
                     <li class="nav-item ">
-                        <a href="/settings.html" class="nav-link">
+                        <a href="{{ url_for('user_bp.settings') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-cog"></span></span>
-                            <span class="sidebar-text">Settings</span>
+                            <span class="sidebar-text">Paramètres</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="{{ url_for('user_bp.trash') }}" class="nav-link">
+                            <span class="sidebar-icon"><span class="fas fa-trash"></span></span>
+                            <span class="sidebar-text">Corbeille</span>
                         </a>
                     </li>
                     <li role="separator" class="dropdown-divider mt-4 mb-3 border-black"></li>

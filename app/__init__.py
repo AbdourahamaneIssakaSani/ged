@@ -5,18 +5,20 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
+from flask_dropzone import Dropzone
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 bcrypt = Bcrypt()
 migrate = Migrate()
-
+dropzone = Dropzone()
 
 def manage_database(app):
     @app.before_first_request
     def initialize():
         db.init_app(app)
         db.create_all()
+
     # // TODO: fix database shutdown
     ''''@app.teardown_request
     def shutdown():
@@ -25,7 +27,7 @@ def manage_database(app):
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config') # // TODO: sensitive data into instance/config
+    app.config.from_object('config')  # // TODO: sensitive data into instance/config
     Bootstrap(app)
     bcrypt.init_app(app)
     # manage_database(app)
@@ -36,6 +38,7 @@ def create_app():
     login_manager.login_message_category = "info"
     login_manager.login_message = "Connectez-vous avant de continuer !"
     # //TODO: regroup login_manager in a function
+    dropzone.init_app(app)
     assets = Environment()
     assets.init_app(app)
     with app.app_context():

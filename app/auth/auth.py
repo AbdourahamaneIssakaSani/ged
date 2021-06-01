@@ -32,7 +32,7 @@ def login():
 def register():
     register_form = CreateAccountForm()
 
-    if register_form.is_submitted():
+    if register_form.validate_on_submit():
         if email_is_unique(email=register_form.email.data):
             new_user = User(
                 f_name=register_form.first_name.data,
