@@ -14,9 +14,11 @@ def login():
     login_error_message = None
     if login_form.validate_on_submit():
         """validate_on_submit will check if it is a POST request and if it is valid"""
+        auth_ok = False
         user = User.query.filter_by(email=login_form.email.data).first()
-        password_verified = user.verify_password(login_form.password.data)
-        if user and password_verified:
+        if user is not None:
+            auth_ok = user.verify_password(login_form.password.data)
+        if auth_ok:
             login_user(user, remember=login_form.remember_me)
             return redirect(url_for('user_bp.dashboard'))
         else:
