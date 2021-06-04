@@ -2,8 +2,8 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user
 
 from app.auth import auth_bp
-from .forms import LoginForm, CreateAccountForm
-from .utils import email_is_unique, verify_password, hash_password
+from .forms import LoginForm, RegisterForm
+from .utils import email_is_unique
 from .. import db
 from ..models import User
 
@@ -11,7 +11,7 @@ from ..models import User
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()
-
+    login_error_message = None
     if login_form.validate_on_submit():
         """validate_on_submit will check if it is a POST request and if it is valid"""
         user = User.query.filter_by(email=login_form.email.data).first()
@@ -19,18 +19,18 @@ def login():
         if user and password_verified:
             login_user(user, remember=login_form.remember_me)
             return redirect(url_for('user_bp.dashboard'))
-        elif not password_verified:
-            flash('Mot de passe erroné', category='danger')
         else:
-            flash('Cet utilisateur n’exsite pas, veuillez créer un compte !', category='warning')
+            login_error_message = 'Échec de connexion : vérifiez votre email ou mot de passe'
+            return render_template('login.html', title='Se connecter', login_form=login_form,
+                                   login_error_message=login_error_message)
     else:
-        return render_template('login.html', title='Se connecter', login_form=login_form)
+        return render_template('login.html', title='Se connecter', login_form=login_form,
+                               login_error_message=login_error_message)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
-@auth_bp.route('/register/<referrer>', methods=['GET', 'POST'])
 def register():
-    register_form = CreateAccountForm()
+    register_form = RegisterForm()
 
     if register_form.validate_on_submit():
         if email_is_unique(email=register_form.email.data):

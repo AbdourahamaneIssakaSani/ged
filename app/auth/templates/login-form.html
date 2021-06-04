@@ -1,14 +1,21 @@
  <form method="post" action="{{ url_for('auth_bp.login') }}" class="mt-4">
 
     {{ login_form.hidden_tag() }}
-
     <!-- Form -->
     <div class="form-group mb-4">
         <label for="email">{{ login_form.email.label }}</label>
         <div class="input-group">
-            <span class="input-group-text" id=""><span
-                    class="fas fa-user-circle"></span></span>
-            {{ login_form.email(placeholder="Adresse email", class="form-control") }}
+            <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+            {% if login_form.email.errors %}
+                {{ login_form.email(placeholder="Adresse email", class="form-control form-control-sm is-invalid") }}
+                <small class="invalid-feedback">
+                    {% for email_error in login_form.email.errors %}
+                        {{ email_error }}
+                    {% endfor %}
+                </small>
+            {% else %}
+                {{ login_form.email(placeholder="Adresse email", class="form-control") }}
+            {% endif %}
         </div>
     </div>
     <!-- End of Form -->
@@ -17,9 +24,17 @@
         <div class="form-group mb-4">
             <label for="password">{{ login_form.password.label }}</label>
             <div class="input-group">
-                <span class="input-group-text" id=""><span
-                        class="fas fa-unlock-alt"></span></span>
-                {{ login_form.password(placeholder="Password", class="form-control", type="password") }}
+                <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
+                {% if login_form.password.errors %}
+                    {{ login_form.password(placeholder="Mot de passe", class="form-control form-control-sm is-invalid") }}
+                    <small class="invalid-feedback">
+                        {% for pwd_error in login_form.password.errors %}
+                            {{ pwd_error }}
+                        {% endfor %}
+                    </small>
+                {% else %}
+                    {{ login_form.password(placeholder="Mot de passe", class="form-control") }}
+                {% endif %}
             </div>
         </div>
         <!-- End of Form -->

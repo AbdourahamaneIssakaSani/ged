@@ -10,25 +10,25 @@
                 <div class="col-12 d-flex align-items-center justify-content-center">
                     <div class="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
                         <div class="text-center text-md-center mb-3 mt-md-0">
-                            <h1 class="mb-0 h3">
+                            <h3 class="mb-0 h3">
                                 NewDevFiles -
-                                Sign UP
-                            </h1>
+                                Connexion
+                            </h3>
                             <br/>
-                            <p>
-                                {% if msg %}
-                                    {{ msg | safe }}
+
+                                {% if login_error_message %}
+                                    <small class="text-danger">{{ login_error_message | safe }}</small>
                                 {% else %}
-                                    Add your credentials
+                                    <p>Veuillez vous identifer</p>
                                 {% endif %}
-                            </p>
+
                         </div>
 
                         {% include 'login-form.html' %}
                         <div class="d-flex justify-content-center align-items-center mt-4">
                           <span class="fw-normal">
-                              Already have an account?
-                              <a href="{{ url_for('auth_bp.register') }}" class="small text-right fw-bold">Register here</a>
+                              Vous n’avez pas de compte ?
+                              <a href="{{ url_for('auth_bp.register') }}" class="small text-right fw-bold">Créez-en un ici</a>
                           </span>
                         </div>
                         {% include 'footer.html' %}

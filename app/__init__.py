@@ -13,6 +13,7 @@ bcrypt = Bcrypt()
 migrate = Migrate()
 dropzone = Dropzone()
 
+
 def manage_database(app):
     @app.before_first_request
     def initialize():

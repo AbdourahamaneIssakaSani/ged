@@ -2,10 +2,10 @@ from flask import render_template
 from flask_login import login_required, current_user
 from flask_uploads import UploadSet, IMAGES
 
-from app import db
-from app.models import File
+from .. import db
+from ..models import File
 from app.user import user_bp
-from app.user.forms import NewFile, NewFiles
+from .forms import NewFile, NewFiles
 
 
 """"app.config.update(
