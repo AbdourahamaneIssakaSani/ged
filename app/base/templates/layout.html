@@ -1,6 +1,6 @@
 {% extends 'bootstrap/base.html' %}
 {% block html_attribs %} lang="en"{% endblock html_attribs %}
-{% block title %} NewDevFiles - {{ title }}  | NewDev MAROC {% endblock %}
+{% block title %} {{ title }} - NewDevFiles | NewDev MAROC {% endblock %}
 {% block styles %} {{ super() }} {% assets'base_style' %}
     <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"/>
 {% endassets %}

@@ -1,8 +1,8 @@
-"""test file upload in db
+"""test upload
 
-Revision ID: f097c7bfb558
-Revises: 6b78bc33adf0
-Create Date: 2021-06-01 17:06:54.904742
+Revision ID: 96ffb83f1260
+Revises: 
+Create Date: 2021-06-04 12:12:51.843660
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f097c7bfb558'
-down_revision = '6b78bc33adf0'
+revision = '96ffb83f1260'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -21,7 +21,7 @@ def upgrade():
     op.create_table('file',
     sa.Column('id_file', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(length=256), nullable=True),
-    sa.Column('data', sa.LargeBinary(), nullable=True),
+    sa.Column('data', sa.String(length=256), nullable=True),
     sa.Column('size', sa.Integer(), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('date_creation', sa.DateTime(), nullable=True),

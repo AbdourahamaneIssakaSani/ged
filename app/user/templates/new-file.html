@@ -10,56 +10,18 @@
 
       }
     </style>
-
-    <!--<div class="container p-y-1">
-        <div class="row m-b-1">
-            <div class="col-sm-6 offset-sm-3">
-                <form>
-                    <div class="form-group inputDnD">
-                    <label class="sr-only" for="inputFile">File Upload</label>
-                    <input type="file" class="form-control-file font-weight-bold" id="inputFile" accept="image/*"
-                           onchange="readUrl(this)" data-title="Drag and drop a file">
-                </div>
-                <div class="form-group inputDnD">
-                    <label class="sr-only" for="inputFile">Description</label>
-                    <textarea class="form-control font-weight-bold" placeholder="Description"></textarea>
-                </div>
-                <button type="reset" class="">
-                    Supprimer
-                </button>
-                <button type="button" class="btn btn-dark" onclick="document.getElementById('inputFile').click()">
-                    Charger
-                </button>
-                <button type="submit" class="btn btn-dark">
-                    Soummette
-                </button>
-                </form>
-            </div>
-
-        </div>
-    </div>
-
-    <div>
-        <span class="fas fa-folder" size="100" style="cursor: pointer"></span>
-        <span>Dossier</span>
-    </div>-->
-    <form action="{{ url_for('user_bp.new_file') }}" enctype="multipart/form-data" method="post">
+    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">
+        {{ dropzone.create() }}
         <div class="form-group">
             <label for="exampleFormControlTextarea1">{{ file_form.description.label }}</label>
             {{ file_form.description(class="form-control") }}
         </div>
-        <div class="form-group">
-            <label for="exampleFormControlTextarea1">{{ file_form.file.label }}</label>
-            {{ file_form.file(class="form-control") }}
-        </div>
         <div class="form-control">
             {{ file_form.submit(class="btn btn-dark") }}
         </div>
-
     </form>
-    {{ dropzone.create(action=url_for('user_bp.new_file')) }}
     <script>
-function readUrl(input) {
+/*function readUrl(input) {
 
 if (input.files && input.files[0]) {
 let reader = new FileReader();
@@ -164,4 +126,5 @@ reader.readAsDataURL(input.files[0]);
 {% block scripts %}
     {{ super() }}
     {{ dropzone.load_js() }}
+    {{ dropzone.config() }}
 {% endblock %}

@@ -36,9 +36,9 @@ class User(db.Model, UserMixin):
 class File(db.Model):
     id = db.Column('id_file', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(256))
-    data = db.Column(db.LargeBinary)
+    data = db.Column(db.String(256))
     size = db.Column(db.Integer)
-    description = db.Column(db.Text)
+    description = db.Column(db.TEXT)
     date_creation = db.Column(db.DateTime)
     owner = db.Column(db.Integer, db.ForeignKey('user.id_user'))
 
