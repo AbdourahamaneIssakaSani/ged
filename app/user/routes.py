@@ -63,13 +63,15 @@ def handle_upload():
             if key.startswith('file'):
                 file.save(os.path.join(app.config['UPLOADED_PATH'], file.filename))
                 # print(file.save(os.path.join(app.config['UPLOADED_PATH'], file.filename)))
-                n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'], description=simple_form.description.data,
+                n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'],
+                              description=simple_form.description.data,
                               owner=current_user.get_id())
                 print(simple_form.description)
-                print(simple_form.description.data.encode('utf-8'))
+                print(simple_form.description.data)
+                print(type(simple_form.description.data))
                 print(n_file.description)
-                db.session.add(n_file)
-                db.session.commit()
+                # db.session.add(n_file)
+                # db.session.commit()
     return redirect(url_for('user_bp.new_file'))
 
 
