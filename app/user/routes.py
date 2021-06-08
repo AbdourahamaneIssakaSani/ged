@@ -2,19 +2,24 @@ import os.path
 
 from flask import render_template, request, redirect, url_for, current_app as app
 from flask_login import login_required, current_user
-from flask_uploads import UploadSet, IMAGES
+from werkzeug.utils import secure_filename
+from flask_uploads import UploadSet, IMAGES, AllExcept, SCRIPTS, EXECUTABLES
 
 from .. import db
-from ..models import File
+# from ..models import File
 from app.user import user_bp
 from .forms import NewFile, NewFiles
 
+ALLOWED_EXTENSIONS = AllExcept(SCRIPTS + EXECUTABLES)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config.update(
-    UPLOADED_PATH=os.path.join(basedir, 'uploads'),
-    DROPZONE_ALLOWED_FILE_TYPE='image',
-    DROPZONE_MAX_FILE_SIZE=10,
-    DROPZONE_MAX_FILES=30,
+    UPLOADED_PATH=os.path.join(basedir, 'uploads/'),
+    DROPZONE_SERVE_LOCAL=True,
+    DROPZONE_ALLOWED_FILE_CUSTOM=True,
+    DROPZONE_ALLOWED_FILE_TYPE=ALLOWED_EXTENSIONS,
+    DROPZONE_MAX_FILE_SIZE=1000,
+    DROPZONE_INVALID_FILE_TYPE='Ce type de fichier n’est pas autorisé',
+    DROPZONE_TIMEOUT=300000 * 6,
     DROPZONE_IN_FORM=True,
     DROPZONE_UPLOAD_ON_CLICK=True,
     DROPZONE_UPLOAD_ACTION='user_bp.handle_upload',  # URL or endpoint
@@ -37,10 +42,9 @@ def new_file():
     multi_form = NewFiles()
     if simple_form.is_submitted():
         filename = photos.save(simple_form.file.data)
-        n_file = File(name=filename, data=simple_form.file.data, owner=current_user.get_id())
-        print(n_file)
-        db.session.add(n_file)
-        db.session.commit()
+        # n_file = File(name=filename, data=simple_form.file.data, owner=current_user.get_id())
+        # db.session.add(n_file)
+        # db.session.commit()
     # ...
     elif multi_form.validate_on_submit():
         pass
@@ -58,18 +62,21 @@ def new_file():
 @login_required
 def handle_upload():
     simple_form = NewFile()
+    user_upload_folder = os.path.join(app.config['UPLOADED_PATH'], current_user.get_id())
+
+    if not os.path.exists(user_upload_folder):
+        os.makedirs(user_upload_folder)
     if simple_form.is_submitted():
         for key, file in request.files.items():
             if key.startswith('file'):
-                file.save(os.path.join(app.config['UPLOADED_PATH'], file.filename))
+                file.save(os.path.join(user_upload_folder, file.filename))
                 # print(file.save(os.path.join(app.config['UPLOADED_PATH'], file.filename)))
-                n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'],
-                              description=simple_form.description.data,
-                              owner=current_user.get_id())
+                # n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'],
+                #              description=simple_form.description.data,
+                #             owner=current_user.get_id())
                 print(simple_form.description)
                 print(simple_form.description.data)
                 print(type(simple_form.description.data))
-                print(n_file.description)
                 # db.session.add(n_file)
                 # db.session.commit()
     return redirect(url_for('user_bp.new_file'))

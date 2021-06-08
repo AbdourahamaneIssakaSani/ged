@@ -1,130 +1,138 @@
 {% extends 'layout.html' %}
 {% block styles %}
     {{ super() }}
-    {{ dropzone.load_css() }}
+   <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
 {% endblock %}
 {% block content %}
     {{ super() }}
-    <style>
-      .dropzone{
-
+<style>
+      #singleFileInput .dropzone{
+            border: #262b40 2px dashed;
+            background-color: whitesmoke;
+      }
+      #singleFileInput .dropzone::before{
+          border: #f1ab5c 2px dashed;
+          background-color: #f1ab5c;
       }
     </style>
-    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">
-        {{ dropzone.create() }}
-        <div class="form-group">
-            {{ file_form.description.label }}
-            {{ file_form.description(class="form-control", type="text") }}
-        </div>
-        <div class="form-control">
-            {{ file_form.submit(class="btn btn-dark") }}
-        </div>
-    </form>
-    <script>
-/*function readUrl(input) {
+{#    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">#}
+{#        {{ dropzone.create() }}#}
+{#        <div class="form-group">#}
+{#            {{ file_form.description.label }}#}
+{#            {{ file_form.description(class="form-control", type="text") }}#}
+{#        </div>#}
+{#        <div class="form-control">#}
+{#            {{ file_form.submit(class="btn btn-dark") }}#}
+{#        </div>#}
+{#    </form>#}
+    <div class="py-4">
+      <nav aria-label="breadcrumb">
+          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+              <li class="breadcrumb-item"><a href="#">Nouveau</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Fichier</li>
+          </ol>
+      </nav>
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+              <h1 class="h4">Vos fichiers et dossiers</h1>
+              <p class="mb-0">Créer vos nouveaux fichiers ici</p>
+          </div>
+          <div>
+              <a href="#" class="btn btn-outline-gray"><i class="far fa-question-circle me-1"></i> Paramètres fichiers</a>
+          </div>
+      </div>
+  </div>
+    <div class="row">
+      <div class="col-12 mb-4">
+          <div class="card border-light shadow-sm components-section">
+              <div class="card-body">
+                  <div class="row mb-4">
+                      <div class="col-lg-6 col-sm-12">
+                          <!-- Form -->
+                          <div class="mb-4">
+                              <label for="usernameValidate">Label</label>
+                              <input type="text" class="form-control" id="usernameValidate" >
+                              <div class="invalid-feedback">
+                                  Please choose a username.
+                              </div>
+                          </div>
+                          <!-- End of Form -->
+                          <!-- Form -->
+                           <div class="mb-4">
+                              <div id="singleFileInput">
+                                <form action="upload" method="post" class="dropzone dz-clickable" id="demoUpload" multiple>
+                                    <div class="dz-message">
+                                        Déposez votre fichier ici
+                                    </div>
+                                </form>
+                            </div>
+                            </div>
+                          <!-- End of Form -->
+                          <div class="mb-3">
+                              <button type="submit" id="loadSingleFile" class="btn btn-outline-dark" value="">Charger</button>
+                              <button type="submit" id="submitSingleFile" class="btn btn-dark" value="">Soumettre</button>
+                          </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-12">
+                          <!-- Form -->
+                           <div class="mb-4">
+                              <label class="my-1 me-2" for="country">Placer dans le dossier</label>
+                              <select class="form-select" id="country" aria-label="Default select example">
+                                  <option selected>Open this select menu</option>
+                                  <option value="1">One</option>
+                                  <option value="2">Two</option>
+                                  <option value="3">Three</option>
+                              </select>
+                            </div>
+                          <!-- End of Form -->
+                          <!-- Form -->
+                          <div class="my-4">
+                              <label for="textarea">Description du fichier</label>
+                              <textarea class="form-control" placeholder="Décrire ici..." id="textarea" rows="4"></textarea>
+                          </div>
+                          <!-- End of Form -->
+                      </div>
+                      <div class="col-lg-12 col-sm-12">
+                          <div class="mb-3">
+                              <label for="birthday">Plusieurs fichiers</label>
+                               <div id="multipleFileInput">
+                                <form action="upload" method="post" class="dropzone dz-clickable" id="demo-upload" multiple>
+                                    <div class="dz-message">
+                                        Plusieurs
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                          <!-- Form -->
+                          <div class="mb-3">
+                              <button type="submit" id="" class="btn btn-dark" placeholder="Disabled input" value="">Valider</button>
+                          </div>
+                          <!-- End of Form -->
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
 
-if (input.files && input.files[0]) {
-let reader = new FileReader();
-reader.onload = (e) => {
-let imgData = e.target.result;
-let imgName = input.files[0].name;
-input.setAttribute("data-title", imgName);
-console.log(e.target.result);
-}
-reader.readAsDataURL(input.files[0]);
-}
-
-}
-        /*function readUrl(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = (e) => {
-                    let imgData = e.target.result;
-                    let imgName = input.files[0].name;
-                    input.setAttribute("data-title", imgName);
-                    console.log(e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        const dragEvents = ['dragenter', 'dragover', 'dragleave', 'drop'];
-        const dragHighlight = ['dragenter', 'dragover'];
-        const dragUnighlight = ['dragleave', 'drop'];
-        const inputRange = document.querySelectorAll('.editor input');
-
-        const dropArea = document.getElementById('drop-area');
-        const iconElement = document.querySelector('.circle');
-        const editorElement = document.querySelector('.editor');
-
-        const preventDefaults = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-        };
-
-        const highlight = () => {
-            iconElement.classList.add('highlight');
-        };
-
-        const unhighlight = () => {
-            iconElement.classList.remove('highlight');
-        };
-
-        const previewFile = (file) => {
-            let reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = function () {
-                //let img = document.createElement('img');
-                //img.src = reader.result;
-                //img.classList.add('img-thumbnail')
-                let fileName = document.createElement('span');
-                fileName.innerText = file.files[0].name;
-                //document.getElementById('gallery').appendChild(img);
-                //editorElement.classList.add('is-visible');
-            }
-        };
-
-        const handleFiles = (files) => {
-            files = [...files];
-            files.forEach(previewFile);
-        };
-
-        const handleDrop = (e) => {
-            let dt = e.dataTransfer;
-            let files = dt.files;
-
-            console.log('files', files);
-
-            handleFiles(files);
-        };
-
-        function handleUpdate() {
-            console.log(this.value);
-            const suffix = this.dataset.unit;
-            document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
-        }
-
-        inputRange.forEach(input => input.addEventListener('change', handleUpdate));
-        inputRange.forEach(input => input.addEventListener('mousemove', handleUpdate));
-
-        dragEvents.forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false)
-        });
-
-        dragHighlight.forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false)
-        });
-
-        dragUnighlight.forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false)
-        });
-
-
-        dropArea.addEventListener('drop', handleDrop, false);*/
-    </script>
 {% endblock %}
 {% block scripts %}
     {{ super() }}
-    {{ dropzone.load_js() }}
-    {{ dropzone.config() }}
+    <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
+    <script>
+        Dropzone.options.demoUpload = {
+            addRemoveLinks: true,
+            autoProcessQueue: false,
+            maxFiles: 1,
+            dictRemoveFile: 'Effacer',
+            init: function (){
+                document.getElementById('loadSingleFile').addEventListener(
+                    'click',()=>{
+                        this.processQueue();
+                    }
+                )
+            }
+        }
+    </script>
 {% endblock %}
