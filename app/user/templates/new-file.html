@@ -1,120 +1,78 @@
 {% extends 'layout.html' %}
 {% block styles %}
     {{ super() }}
-   <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
 {% endblock %}
 {% block content %}
     {{ super() }}
-<style>
-      #singleFileInput .dropzone{
+    <style>
+        #singleFileInput .dropzone {
             border: #262b40 2px dashed;
             background-color: whitesmoke;
-      }
-      #singleFileInput .dropzone::before{
-          border: #f1ab5c 2px dashed;
-          background-color: #f1ab5c;
-      }
+            min-height: 250px;
+            height: 250px;
+            width: 100%;
+        }
+
+        #singleFileInput .dropzone::after {
+            border: #f1ab5c 2px dashed;
+            background-color: #f1ab5c;
+        }
     </style>
-{#    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">#}
-{#        {{ dropzone.create() }}#}
-{#        <div class="form-group">#}
-{#            {{ file_form.description.label }}#}
-{#            {{ file_form.description(class="form-control", type="text") }}#}
-{#        </div>#}
-{#        <div class="form-control">#}
-{#            {{ file_form.submit(class="btn btn-dark") }}#}
-{#        </div>#}
-{#    </form>#}
+    {#    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">#}
+    {#        {{ dropzone.create() }}#}
+    {#        <div class="form-group">#}
+    {#            {{ file_form.description.label }}#}
+    {#            {{ file_form.description(class="form-control", type="text") }}#}
+    {#        </div>#}
+    {#        <div class="form-control">#}
+    {#            {{ file_form.submit(class="btn btn-dark") }}#}
+    {#        </div>#}
+    {#    </form>#}
     <div class="py-4">
-      <nav aria-label="breadcrumb">
-          <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
-              <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
-              <li class="breadcrumb-item"><a href="#">Nouveau</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Fichier</li>
-          </ol>
-      </nav>
-      <div class="d-flex justify-content-between w-100 flex-wrap">
-          <div class="mb-3 mb-lg-0">
-              <h1 class="h4">Vos fichiers et dossiers</h1>
-              <p class="mb-0">Créer vos nouveaux fichiers ici</p>
-          </div>
-          <div>
-              <a href="#" class="btn btn-outline-gray"><i class="far fa-question-circle me-1"></i> Paramètres fichiers</a>
-          </div>
-      </div>
-  </div>
-    <div class="row">
-      <div class="col-12 mb-4">
-          <div class="card border-light shadow-sm components-section">
-              <div class="card-body">
-                  <div class="row mb-4">
-                      <div class="col-lg-6 col-sm-12">
-                          <!-- Form -->
-                          <div class="mb-4">
-                              <label for="usernameValidate">Label</label>
-                              <input type="text" class="form-control" id="usernameValidate" >
-                              <div class="invalid-feedback">
-                                  Please choose a username.
-                              </div>
-                          </div>
-                          <!-- End of Form -->
-                          <!-- Form -->
-                           <div class="mb-4">
-                              <div id="singleFileInput">
-                                <form action="upload" method="post" class="dropzone dz-clickable" id="demoUpload" multiple>
-                                    <div class="dz-message">
-                                        Déposez votre fichier ici
-                                    </div>
-                                </form>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Nouveau</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Fichier</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Vos fichiers et dossiers</h1>
+                <p class="mb-0">Créer vos nouveaux fichiers ici</p>
+            </div>
+            <div>
+                <a href="#" class="btn btn-outline-gray"><i class="far fa-question-circle me-1"></i> Paramètres fichiers</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
+            <div class="col-12 col-lg-7 order-2 order-lg-1 text-center text-lg-left">
+                <div id="singleFileInput">
+                    <form action="upload" method="post" enctype="multipart/form-data"
+                          class="dropzone dz-clickable" id="demoUpload">
+                        <div class="dz-message">
+                            <div class="align-items-center">
+                                <img crossorigin="img-fluid w-20" style="max-width: 200px" src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
                             </div>
-                            </div>
-                          <!-- End of Form -->
-                          <div class="mb-3">
-                              <button type="submit" id="loadSingleFile" class="btn btn-outline-dark" value="">Charger</button>
-                              <button type="submit" id="submitSingleFile" class="btn btn-dark" value="">Soumettre</button>
-                          </div>
-                      </div>
-                      <div class="col-lg-6 col-sm-12">
-                          <!-- Form -->
-                           <div class="mb-4">
-                              <label class="my-1 me-2" for="country">Placer dans le dossier</label>
-                              <select class="form-select" id="country" aria-label="Default select example">
-                                  <option selected>Open this select menu</option>
-                                  <option value="1">One</option>
-                                  <option value="2">Two</option>
-                                  <option value="3">Three</option>
-                              </select>
-                            </div>
-                          <!-- End of Form -->
-                          <!-- Form -->
-                          <div class="my-4">
-                              <label for="textarea">Description du fichier</label>
-                              <textarea class="form-control" placeholder="Décrire ici..." id="textarea" rows="4"></textarea>
-                          </div>
-                          <!-- End of Form -->
-                      </div>
-                      <div class="col-lg-12 col-sm-12">
-                          <div class="mb-3">
-                              <label for="birthday">Plusieurs fichiers</label>
-                               <div id="multipleFileInput">
-                                <form action="upload" method="post" class="dropzone dz-clickable" id="demo-upload" multiple>
-                                    <div class="dz-message">
-                                        Plusieurs
-                                    </div>
-                                </form>
-                            </div>
-                          </div>
-                          <!-- Form -->
-                          <div class="mb-3">
-                              <button type="submit" id="" class="btn btn-dark" placeholder="Disabled input" value="">Valider</button>
-                          </div>
-                          <!-- End of Form -->
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+                            Déposez votre fichier ici
+                        </div>
+                    </form>
+                </div>
+                <button type="submit" id="loadSingleFile" class="btn btn-outline-dark" value="">
+                    Charger
+                </button>
+                {{ single_file_form.submit(class="btn btn-dark") }}
+            </div>
+            <div class=" col-12 col-lg-5 order-1 order-lg-2 text-center d-flex align-items-center justify-content-center align-items-lg-end justify-content-lg-end">
+                <img class="img-fluid w-75"
+                     src="{{ url_for('static', filename='img/illustrations/undraw_Add_files_re_v09g.svg') }}"
+                     alt=""/>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 {% block scripts %}
@@ -124,15 +82,21 @@
         Dropzone.options.demoUpload = {
             addRemoveLinks: true,
             autoProcessQueue: false,
-            maxFiles: 1,
             dictRemoveFile: 'Effacer',
-            init: function (){
+            init: function () {
                 document.getElementById('loadSingleFile').addEventListener(
-                    'click',()=>{
+                    'click', () => {
                         this.processQueue();
                     }
-                )
-            }
+                );
+
+                this.on('complete', (file) => {
+                   //this.addRemoveLinks :false;
+                    setTimeout(() => {
+                        this.removeFile(file);
+                    }, 3000);
+                });
+            },
         }
     </script>
 {% endblock %}

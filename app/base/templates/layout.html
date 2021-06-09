@@ -5,20 +5,24 @@
     <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"/>
 {% endassets %}
     <!-- Fontawesome -->
-    <link type="text/css" href="{{ url_for('static',filename='vendor/@fortawesome/fontawesome-free/css/all.min.css') }}" rel="stylesheet"/>
+    <link type="text/css" href="{{ url_for('static',filename='vendor/@fortawesome/fontawesome-free/css/all.min.css') }}"
+          rel="stylesheet"/>
 
     <!-- Sweet Alert -->
-    <link type="text/css" href="{{ url_for('static',filename='vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet"/>
+    <link type="text/css" href="{{ url_for('static',filename='vendor/sweetalert2/dist/sweetalert2.min.css') }}"
+          rel="stylesheet"/>
 
     <!-- Notyf -->
     <link type="text/css" href="{{ url_for('static',filename='vendor/notyf/notyf.min.css') }}" rel="stylesheet"/>
 {% endblock styles %}
-    {% block body -%}
-        {% block navbar %}
+{% block body -%}
+    {% block navbar %}
         <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-md-none">
             <a class="navbar-brand me-lg-5" href="/">
-                <img class="navbar-brand-dark" src="{{ url_for('static', filename='img/brand/light.svg') }}" alt="Volt logo"/>
-                <img class="navbar-brand-light" src="{{ url_for('static', filename='img/brand/dark.svg') }}" alt="Volt logo"/>
+                <img class="navbar-brand-dark" src="{{ url_for('static', filename='img/brand/light.svg') }}"
+                     alt="Volt logo"/>
+                <img class="navbar-brand-light" src="{{ url_for('static', filename='img/brand/dark.svg') }}"
+                     alt="Volt logo"/>
             </a>
             <div class="d-flex align-items-center">
                 <button class="navbar-toggler d-md-none collapsed" type="button" data-toggle="collapse"
@@ -39,7 +43,7 @@
                         </div>
                         <div class="d-block">
                             <h2 class="h6">
-                               {{ current_user.last_name }}{{ current_user.first_name }}
+                                {{ current_user.last_name }}{{ current_user.first_name }}
                             </h2>
                             <a href="{{ url_for('auth_bp.logout') }}" class="btn btn-secondary text-dark btn-xs">
                                 <span class="me-2">
@@ -58,7 +62,8 @@
                     <li class="nav-item">
                         <a href="/" class="nav-link d-flex align-items-center">
                     <span class="sidebar-icon">
-                      <img src="{{ url_for('static', filename='img/brand/light.svg') }}" height="20" width="20" alt="Volt Logo">
+                      <img src="{{ url_for('static', filename='img/brand/light.svg') }}" height="20" width="20"
+                           alt="Volt Logo">
                     </span>
                             <span class="mt-1 ms-1 sidebar-text">Volt Overview</span>
                         </a>
@@ -71,7 +76,7 @@
                     </li>
                     <li class="nav-item ">
                       <span class="nav-link collapsed d-flex justify-content-between align-items-center"
-                              data-toggle="collapse" data-target="#submenu-app">
+                            data-toggle="collapse" data-target="#submenu-app">
                         <span>
                           <span class="sidebar-icon"><span class="fas fa-plus"></span></span>
                           <span class="sidebar-text">Nouveau</span>
@@ -83,13 +88,19 @@
                                 <li class="nav-item ">
                                     <a class="nav-link" href="{{ url_for('user_bp.new_file') }}">
                                         <span class="sidebar-icon"><span class="fas fa-file-import"></span></span>
-                                        <span class="sidebar-text">Importer des fichiers</span>
+                                        <span class="sidebar-text">Fichiers</span>
                                     </a>
                                 </li>
                                 <li class="nav-item ">
-                                    <a class="nav-link" href="{{ url_for('user_bp.import_folder') }}">
-                                        <span class="sidebar-icon"><span class="fas fa-upload"></span></span>
-                                        <span class="sidebar-text">Importer un dossier</span>
+                                    <a class="nav-link" href="#newFolderModal" data-toggle="modal">
+                                        <span class="sidebar-icon"><span class="fas fa-folder-plus"></span></span>
+                                        <span class="sidebar-text">Dossier</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a href="{{ url_for('user_bp.new_space') }}" class="nav-link">
+                                        <span class="sidebar-icon"><span class="fas fa-users"></span></span>
+                                        <span class="sidebar-text">Espace</span>
                                     </a>
                                 </li>
                             </ul>
@@ -97,14 +108,20 @@
                     </li>
                     <li class="nav-item ">
                         <a href="/transactions.html" class="nav-link">
-                            <span class="sidebar-icon"><span class="fas fa-folder-plus"></span></span>
-                            <span class="sidebar-text">Créer un dossier</span>
+                            <span class="sidebar-icon"><span class="fas fa-folder"></span></span>
+                            <span class="sidebar-text">Mes Dossiers</span>
                         </a>
                     </li>
                     <li class="nav-item ">
-                        <a href="{{ url_for('user_bp.new_space') }}" class="nav-link">
+                        <a href="/transactions.html" class="nav-link">
+                            <span class="sidebar-icon"><span class="fas fa-file-alt"></span></span>
+                            <span class="sidebar-text">Mes fichiers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="/transactions.html" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-users"></span></span>
-                            <span class="sidebar-text">Créer un espace</span>
+                            <span class="sidebar-text">Mes espaces</span>
                         </a>
                     </li>
                     <li class="nav-item ">
@@ -125,7 +142,7 @@
                            target="_blank"
                            class="nav-link d-flex align-items-center">
                             <span class="sidebar-icon"><span class="fas fa-info-circle"></span></span>
-                                <span class="sidebar-text">À Propos</span>
+                            <span class="sidebar-text">À Propos</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -138,19 +155,45 @@
                 </ul>
             </div>
         </nav>
-        {%- endblock navbar %}
-
-        <main class="content">
+    {%- endblock navbar %}
+    <div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Créer un dossier</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label for="usernameValidate">Nom du dossier</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
+                        <input type="text" class="form-control" id="usernameValidate" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Donnez un nom !
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link text-gray ms-auto" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="content">
         {% block content -%}
-        {% include 'navigation.html' %}
+            {% include 'navigation.html' %}
         {%- endblock content %}
-        </main>
-        <footer class="footer section py-5">
-            {% include 'footer.html' %}
-        </footer>
-        {% block scripts %}
-            {{ super() }}
-            <script src="{{ url_for('static', filename='dist/js/base.min.js') }}"></script>
-        {%- endblock scripts %}
-    {% endblock body %}
+    </main>
+    <footer class="footer section py-5">
+        {% include 'footer.html' %}
+    </footer>
+    {% block scripts %}
+        {{ super() }}
+        <script src="{{ url_for('static', filename='dist/js/base.min.js') }}"></script>
+    {%- endblock scripts %}
+{% endblock body %}
 

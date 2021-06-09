@@ -8,23 +8,24 @@ from flask_uploads import UploadSet, IMAGES, AllExcept, SCRIPTS, EXECUTABLES
 from .. import db
 # from ..models import File
 from app.user import user_bp
-from .forms import NewFile, NewFiles
+from .forms import SingleFileForm, NewFiles
+from ..models import File
 
 ALLOWED_EXTENSIONS = AllExcept(SCRIPTS + EXECUTABLES)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config.update(
-    UPLOADED_PATH=os.path.join(basedir, 'uploads/'),
-    DROPZONE_SERVE_LOCAL=True,
-    DROPZONE_ALLOWED_FILE_CUSTOM=True,
-    DROPZONE_ALLOWED_FILE_TYPE=ALLOWED_EXTENSIONS,
-    DROPZONE_MAX_FILE_SIZE=1000,
-    DROPZONE_INVALID_FILE_TYPE='Ce type de fichier n’est pas autorisé',
-    DROPZONE_TIMEOUT=300000 * 6,
-    DROPZONE_IN_FORM=True,
-    DROPZONE_UPLOAD_ON_CLICK=True,
-    DROPZONE_UPLOAD_ACTION='user_bp.handle_upload',  # URL or endpoint
-    DROPZONE_UPLOAD_BTN_ID='submit',
-)
+# app.config.update(
+#     UPLOADED_PATH=os.path.join(basedir, 'uploads/'),
+#     DROPZONE_SERVE_LOCAL=True,
+#     DROPZONE_ALLOWED_FILE_CUSTOM=True,
+#     DROPZONE_ALLOWED_FILE_TYPE=ALLOWED_EXTENSIONS,
+#     DROPZONE_MAX_FILE_SIZE=1000,
+#     DROPZONE_INVALID_FILE_TYPE='Ce type de fichier n’est pas autorisé',
+#     DROPZONE_TIMEOUT=300000 * 6,
+#     DROPZONE_IN_FORM=True,
+#     DROPZONE_UPLOAD_ON_CLICK=True,
+#     DROPZONE_UPLOAD_ACTION='user_bp.handle_upload',  # URL or endpoint
+#     DROPZONE_UPLOAD_BTN_ID='submit',
+# )
 
 photos = UploadSet('photos', IMAGES)
 
@@ -38,7 +39,7 @@ def dashboard():
 @user_bp.route('/new-file', methods=['GET', 'POST'])
 @login_required
 def new_file():
-    simple_form = NewFile()
+    simple_form = SingleFileForm()
     multi_form = NewFiles()
     if simple_form.is_submitted():
         filename = photos.save(simple_form.file.data)
@@ -53,7 +54,7 @@ def new_file():
         return render_template(
             'new-file.html',
             title='Nouveau fichier',
-            file_form=simple_form,
+            single_file_form=simple_form,
             files_form=multi_form
         )
 
@@ -61,8 +62,8 @@ def new_file():
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
-    simple_form = NewFile()
-    user_upload_folder = os.path.join(app.config['UPLOADED_PATH'], current_user.get_id())
+    simple_form = SingleFileForm()
+    user_upload_folder = os.path.join('uploads', current_user.get_id())
 
     if not os.path.exists(user_upload_folder):
         os.makedirs(user_upload_folder)
