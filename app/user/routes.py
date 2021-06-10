@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, url_for, current_app as ap
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from flask_uploads import UploadSet, IMAGES, AllExcept, SCRIPTS, EXECUTABLES
-
+from cryptography.fernet import Fernet
 from .. import db
 # from ..models import File
 from app.user import user_bp
@@ -14,7 +14,7 @@ from ..models import File
 ALLOWED_EXTENSIONS = AllExcept(SCRIPTS + EXECUTABLES)
 basedir = os.path.abspath(os.path.dirname(__file__))
 # app.config.update(
-#     UPLOADED_PATH=os.path.join(basedir, 'uploads/'),
+UPLOADED_PATH = os.path.join(basedir, 'uploads')
 #     DROPZONE_SERVE_LOCAL=True,
 #     DROPZONE_ALLOWED_FILE_CUSTOM=True,
 #     DROPZONE_ALLOWED_FILE_TYPE=ALLOWED_EXTENSIONS,
@@ -28,6 +28,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # )
 
 photos = UploadSet('photos', IMAGES)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @user_bp.route('/dashboard', methods=['GET', 'POST'])
@@ -59,27 +63,57 @@ def new_file():
         )
 
 
+def encrypt_file(file, location):
+    with open('file_key.key', 'rb') as file_key:
+        stored_key = file_key.read()
+    fernet = Fernet(stored_key)
+
+    with open(location + '\\' + file.filename, 'rb') as file_to_encrypt:
+        data_to_encrypt = file_to_encrypt.read()
+    encrypted_data = fernet.encrypt(data_to_encrypt)
+
+    with open(location + '\\' + file.filename, 'wb') as file_encrypted:
+        file_encrypted.write(encrypted_data)
+
+
+def decrypt_file():
+    pass
+
+
+def generate_fernet_key():
+    k = Fernet.generate_key()
+    # print(k)
+    with open('file_key.key', 'wb') as new_file_key:
+        new_file_key.write(k)
+    return k
+
+
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
     simple_form = SingleFileForm()
-    user_upload_folder = os.path.join('uploads', current_user.get_id())
-
-    if not os.path.exists(user_upload_folder):
-        os.makedirs(user_upload_folder)
-    if simple_form.is_submitted():
+    user_upload_folder = os.path.join('uploads', 'user_' + current_user.get_id())
+    if request.method == 'POST':
+        if not os.path.exists(user_upload_folder):
+            os.makedirs(user_upload_folder)
         for key, file in request.files.items():
-            if key.startswith('file'):
+            file.filename = secure_filename(file.filename)
+            if key.startswith('file') and allowed_file(file.filename):
+                # print(file.filename+'yes')
+                # encrypt
                 file.save(os.path.join(user_upload_folder, file.filename))
-                # print(file.save(os.path.join(app.config['UPLOADED_PATH'], file.filename)))
+                encrypt_file(file, user_upload_folder)
+                #
                 # n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'],
                 #              description=simple_form.description.data,
                 #             owner=current_user.get_id())
-                print(simple_form.description)
-                print(simple_form.description.data)
-                print(type(simple_form.description.data))
                 # db.session.add(n_file)
                 # db.session.commit()
+            elif not allowed_file(file.filename):
+                print('file not allowed')
+            else:
+                print('nothing')
+
     return redirect(url_for('user_bp.new_file'))
 
 

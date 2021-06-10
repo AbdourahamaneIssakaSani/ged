@@ -51,11 +51,11 @@
         <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
             <div class="col-12 col-lg-7 order-2 order-lg-1 text-center text-lg-left">
                 <div id="singleFileInput">
-                    <form action="upload" method="post" enctype="multipart/form-data"
+                    <form action="{{ url_for('user_bp.handle_upload') }}" method="post" enctype="multipart/form-data"
                           class="dropzone dz-clickable" id="demoUpload">
                         <div class="dz-message">
                             <div class="align-items-center">
-                                <img crossorigin="img-fluid w-20" style="max-width: 200px" src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
+                                <img class="img-fluid w-20" alt="" style="max-width: 200px" src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
                             </div>
                             Déposez votre fichier ici
                         </div>
@@ -81,6 +81,7 @@
     <script>
         Dropzone.options.demoUpload = {
             addRemoveLinks: true,
+            uploadMultiple: true,
             autoProcessQueue: false,
             dictRemoveFile: 'Effacer',
             init: function () {
