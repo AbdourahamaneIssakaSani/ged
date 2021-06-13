@@ -1,0 +1,229 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {{ super() }}
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Liste</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mes Fichier</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Listes de mes fichiers ici</h1>
+                <p class="mb-0">Créer vos nouveaux fichiers ici</p>
+            </div>
+            <div>
+                <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView(this)"><i
+                        class="fas fa-list"></i></a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .menu-label {
+            color: #7a7a7a;
+            font-size: 0.75em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .menu-label:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .menu-label:not(:last-child) {
+            margin-bottom: 1em;
+        }
+
+        div.file {
+        {#width: 100px;#} width: 10vw;
+        }
+
+        .file:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        div.file-title {
+            width: 100%;
+            font-size: 0.9vw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.file-details {
+            font-size: 1.1vh;
+        }
+
+        #table {
+            display: none;
+        }
+    </style>
+    <div class="container-fluid">
+        <div id="grid">
+            <div class="row">
+                {% for file in files %}
+                    <div class="col-1 p-2 m-3">
+                        <div class="file p-4" data-wow-delay="0.8s">
+                            <div class="file-icon d-flex justify-content-around">
+                                <i style="font-size: 10vh" class="fas fa-file-excel"></i>
+                                <div class="dropdown" style="position: relative; top: 3px;">
+                                    <a class="" id="" data-toggle="dropdown" aria-haspopup="true"
+                                       aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="">
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.download', id_file=file.id) }}">
+                                            <i class="fas fa-cloud-download-alt pr-2"></i>
+                                            Télécharger
+                                        </a>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-share pr-2"></i>
+                                            Partager
+                                        </a>
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.delete', id_file=file.id) }}">
+                                            <i class="fas fa-trash-alt pr-2"></i>
+                                            Supprimer
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
+                                            <i class="fas fa-info-circle pr-2"></i>
+                                            Informations
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-title">
+                                    {{ file.name }}
+                                </div>
+                                <div class="d-flex justify-content-between flex-row menu-label file-details">
+                                    <span>{{ file.creation_date }}</span>
+                                    <span>{{ file.size }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="table-responsive py-4" id="table">
+            <table class="table table-flush table-hover" id="datatable">
+                <thead class="thead-light">
+                <tr>
+                    <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
+                    <th>Nom</th>
+                    <th></th>
+                    <th>Date de création</th>
+                    <th>Taille</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td class="p-3"><input type="checkbox" class="to-check"></td>
+                        <td class="d-flex flex-row">
+                            <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file-pdf"></i></div>
+                            <div class="p-2">
+                                {{ file.name }}
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <div class="dropdown">
+                                <a class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                   aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="{{ url_for('user_bp.download', id_file=file.id) }}">
+                                        <i class="fas fa-cloud-download-alt pr-2"></i>
+                                        Télécharger
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fas fa-share pr-2"></i>
+                                        Partager
+                                    </a>
+                                    <a class="dropdown-item" href="{{ url_for('user_bp.delete', id_file=file.id) }}">
+                                        <i class="fas fa-trash-alt pr-2"></i>
+                                        Supprimer
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
+                                        <i class="fas fa-info-circle pr-2"></i>
+                                        Informations
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            {{ file.creation_date }}
+                        </td>
+                        <td class="p-3">
+                            {{ file.size }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Modal Content -->
+    {% for file in files %}
+    <div class="modal modal-info fade" id="modal-{{ file.id }}" tabindex="-1" role="dialog" aria-labelledby="modalTitleNotify" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="py-3 text-white">
+                        <h2 class="h4 modal-title my-3">Important message!</h2>
+                        <p>Nom : {{ file.name }}</p>
+                        <p>Crée le : {{ file.creation_date }}</p>
+                        <p>Taille sur le serveur : {{ file.size }}</p>
+                        <p>Partagé : Oui/Non</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <!-- End of Modal Content -->
+    <script>
+        function checkAll() {
+            if (document.getElementById('allCheckBoxes').checked) {
+                let check_boxes = document.getElementsByClassName('to-check');
+                for (let i = 0; i < check_boxes.length; i++) {
+                    check_boxes[i].checked = true;
+                }
+            } else {
+                let check_boxes = document.getElementsByClassName('to-check');
+                for (let i = 0; i < check_boxes.length; i++) {
+                    check_boxes[i].checked = false;
+                }
+            }
+        }
+
+        function changeView() {
+            let grid = document.getElementById('grid');
+            let table = document.getElementById('table');
+            if (grid.style.display === 'none') {
+                table.style.display = 'none';
+                grid.style.display = 'block';
+                document.getElementById('btnChangeView').innerHTML = '<i class="fas fa-list"></i>';
+            } else {
+                table.style.display = 'block';
+                grid.style.display = 'none';
+                document.getElementById('btnChangeView').innerHTML = '<i class="fas fa-th"></i>';
+            }
+        }
+    </script>
+{% endblock %}

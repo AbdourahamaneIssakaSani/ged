@@ -11,6 +11,7 @@
             background-color: whitesmoke;
             min-height: 250px;
             height: 250px;
+            overflow: auto;
             width: 100%;
         }
 
@@ -19,16 +20,6 @@
             background-color: #f1ab5c;
         }
     </style>
-    {#    <form action="{{ url_for('user_bp.handle_upload') }}" enctype="multipart/form-data" method="post">#}
-    {#        {{ dropzone.create() }}#}
-    {#        <div class="form-group">#}
-    {#            {{ file_form.description.label }}#}
-    {#            {{ file_form.description(class="form-control", type="text") }}#}
-    {#        </div>#}
-    {#        <div class="form-control">#}
-    {#            {{ file_form.submit(class="btn btn-dark") }}#}
-    {#        </div>#}
-    {#    </form>#}
     <div class="py-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
@@ -64,7 +55,6 @@
                 <button type="submit" id="loadSingleFile" class="btn btn-outline-dark" value="">
                     Charger
                 </button>
-                {{ single_file_form.submit(class="btn btn-dark") }}
             </div>
             <div class=" col-12 col-lg-5 order-1 order-lg-2 text-center d-flex align-items-center justify-content-center align-items-lg-end justify-content-lg-end">
                 <img class="img-fluid w-75"
@@ -82,6 +72,7 @@
         Dropzone.options.demoUpload = {
             addRemoveLinks: true,
             uploadMultiple: true,
+            parallelUploads: 100,
             autoProcessQueue: false,
             dictRemoveFile: 'Effacer',
             init: function () {

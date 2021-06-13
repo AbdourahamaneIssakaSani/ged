@@ -1,37 +1,20 @@
 import os.path
 
-from flask import render_template, request, redirect, url_for, current_app as app
-from flask_login import login_required, current_user
-from werkzeug.utils import secure_filename
-from flask_uploads import UploadSet, IMAGES, AllExcept, SCRIPTS, EXECUTABLES
 from cryptography.fernet import Fernet
+from flask import render_template, request, redirect, url_for, send_from_directory, send_file
+from flask_login import login_required, current_user
+from flask_uploads import UploadSet, IMAGES
 from .. import db
+from werkzeug.utils import secure_filename
 # from ..models import File
 from app.user import user_bp
 from .forms import SingleFileForm, NewFiles
+from .utils import encrypt_file_content, allowed_file, decrypt_file_content
 from ..models import File
 
-ALLOWED_EXTENSIONS = AllExcept(SCRIPTS + EXECUTABLES)
 basedir = os.path.abspath(os.path.dirname(__file__))
 # app.config.update(
 UPLOADED_PATH = os.path.join(basedir, 'uploads')
-#     DROPZONE_SERVE_LOCAL=True,
-#     DROPZONE_ALLOWED_FILE_CUSTOM=True,
-#     DROPZONE_ALLOWED_FILE_TYPE=ALLOWED_EXTENSIONS,
-#     DROPZONE_MAX_FILE_SIZE=1000,
-#     DROPZONE_INVALID_FILE_TYPE='Ce type de fichier n’est pas autorisé',
-#     DROPZONE_TIMEOUT=300000 * 6,
-#     DROPZONE_IN_FORM=True,
-#     DROPZONE_UPLOAD_ON_CLICK=True,
-#     DROPZONE_UPLOAD_ACTION='user_bp.handle_upload',  # URL or endpoint
-#     DROPZONE_UPLOAD_BTN_ID='submit',
-# )
-
-photos = UploadSet('photos', IMAGES)
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @user_bp.route('/dashboard', methods=['GET', 'POST'])
@@ -43,72 +26,37 @@ def dashboard():
 @user_bp.route('/new-file', methods=['GET', 'POST'])
 @login_required
 def new_file():
-    simple_form = SingleFileForm()
-    multi_form = NewFiles()
-    if simple_form.is_submitted():
-        filename = photos.save(simple_form.file.data)
-        # n_file = File(name=filename, data=simple_form.file.data, owner=current_user.get_id())
-        # db.session.add(n_file)
-        # db.session.commit()
-    # ...
-    elif multi_form.validate_on_submit():
-        pass
-    # ...
-    else:
-        return render_template(
-            'new-file.html',
-            title='Nouveau fichier',
-            single_file_form=simple_form,
-            files_form=multi_form
-        )
-
-
-def encrypt_file(file, location):
-    with open('file_key.key', 'rb') as file_key:
-        stored_key = file_key.read()
-    fernet = Fernet(stored_key)
-
-    with open(location + '\\' + file.filename, 'rb') as file_to_encrypt:
-        data_to_encrypt = file_to_encrypt.read()
-    encrypted_data = fernet.encrypt(data_to_encrypt)
-
-    with open(location + '\\' + file.filename, 'wb') as file_encrypted:
-        file_encrypted.write(encrypted_data)
-
-
-def decrypt_file():
-    pass
-
-
-def generate_fernet_key():
-    k = Fernet.generate_key()
-    # print(k)
-    with open('file_key.key', 'wb') as new_file_key:
-        new_file_key.write(k)
-    return k
+    return render_template('new-file.html', title='Nouveau fichier')
 
 
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
     simple_form = SingleFileForm()
-    user_upload_folder = os.path.join('uploads', 'user_' + current_user.get_id())
+    user_upload_folder = os.path.join(UPLOADED_PATH, 'user_' + current_user.get_id())
     if request.method == 'POST':
         if not os.path.exists(user_upload_folder):
             os.makedirs(user_upload_folder)
         for key, file in request.files.items():
+            original_file_name = file.filename
             file.filename = secure_filename(file.filename)
             if key.startswith('file') and allowed_file(file.filename):
-                # print(file.filename+'yes')
-                # encrypt
                 file.save(os.path.join(user_upload_folder, file.filename))
-                encrypt_file(file, user_upload_folder)
-                #
-                # n_file = File(name=file.filename, data=app.config['UPLOADED_PATH'],
-                #              description=simple_form.description.data,
+                print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
+                encrypt_file_content(user_upload_folder + '\\' + file.filename)
+                print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
+                file_size_stored = os.path.getsize(user_upload_folder + '\\' + file.filename)
+                print(file.content_type)
+                n_file = File(
+                    name=original_file_name,
+                    path=user_upload_folder + '\\' + file.filename,
+                    size=file_size_stored,
+                    owner=current_user.get_id()
+                )
+                #             description=simple_form.description.data,
                 #             owner=current_user.get_id())
-                # db.session.add(n_file)
-                # db.session.commit()
+                db.session.add(n_file)
+                db.session.commit()
             elif not allowed_file(file.filename):
                 print('file not allowed')
             else:
@@ -117,10 +65,42 @@ def handle_upload():
     return redirect(url_for('user_bp.new_file'))
 
 
-@user_bp.route('import-folder', methods=['GET', 'POST'])
+@user_bp.route('/download/<id_file>', methods=['GET'])
 @login_required
-def import_folder():
-    return render_template('folder-import.html', title='Importer des Dossiers')
+def download(id_file):
+    file = File.query.filter_by(id=id_file).first()
+    decrypt_file_content(file.path)
+    return send_file(file.path, as_attachment=True)
+
+
+@user_bp.route('/download-many/<id_file>', methods=['GET'])
+@login_required
+def download_many(id_file):
+    file = File.query.filter_by(id=id_file).first()
+    decrypt_file_content(file.path)
+    return send_file(file.path, as_attachment=True)
+
+
+@user_bp.route('/delete/<id_file>', methods=['GET'])
+@login_required
+def delete(id_file):
+    file = File.query.filter_by(id=id_file).first()
+    db.session.delete(file)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_files'))
+
+
+@user_bp.route('file-list', methods=['GET'])
+@login_required
+def my_files():
+    files = File.query.filter_by(owner=current_user.get_id()).all()
+    return render_template('files-list.html', title='Mes fichiers', files=files)
+
+
+@user_bp.route('folders', methods=['GET', 'POST'])
+@login_required
+def folders():
+    return render_template('folders.html', title='Importer des Dossiers')
 
 
 @user_bp.route('new-space', methods=['GET', 'POST'])

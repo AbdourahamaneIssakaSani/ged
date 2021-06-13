@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {{ super() }}
+    <style>
+        .folder {
+            width: 10vw;
+            cursor: pointer;
+        }
+
+        .folder:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        .menu-label {
+            color: #7a7a7a;
+            font-size: 0.75em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .menu-label:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .menu-label:not(:last-child) {
+            margin-bottom: 1em;
+        }
+
+        div.file {
+        {#width: 100px;#} width: 10vw;
+        }
+
+        .file:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        div.file-title {
+            width: 100%;
+            font-size: 0.9vw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.file-details {
+            font-size: 1.1vh;
+        }
+
+        #table {
+            display: none;
+        }
+    </style>
+    <div class="container" id="folders">
+        <div class="row">
+            {% for file in range(17) %}
+                <div class="col-1 p-3 m-3">
+                    <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ file }})" data-wow-delay="0.8s">
+                        <div class="file-icon d-flex align-items-center justify-content-center">
+                            <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
+                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </a>
+                        </div>
+                        <div class="folder-structure">
+                            <div class="folder-title d-flex justify-content-center align-items-center">
+                                {#                            {{ file.name }}#}
+                                Dossier
+                            </div>
+                            <div class="d-flex justify-content-between flex-row menu-label file-details">
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% for folder in range(17) %}
+
+    <div class="container-fluid folder-files" id="folder-content-{{ folder }}" style="display: none;">
+        <button class="btn-outline-dark" onclick="displayFolderList()">Retour</button>
+        <p>Folder contain {{ folder }}</p>
+    </div>
+    {% endfor %}
+    <script>
+        function displayFolderContent(folderID) {
+            //let folders = document.getElementsByClassName('folder');
+            document.getElementById('folders').style.display = 'none';
+            document.getElementById('folder-content-'+folderID).style.display = 'block';
+        }
+        function displayFolderList() {
+           let filesList = document.getElementsByClassName('folder-files');
+            for (let i=0;i<filesList.length;i++){
+                filesList[i].style.display = 'none';
+            }
+            document.getElementById('folders').style.display = 'block';
+        }
+    </script>
+{% endblock %}

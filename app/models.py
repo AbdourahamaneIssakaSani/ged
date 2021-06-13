@@ -1,3 +1,5 @@
+import datetime
+
 from app import db, login_manager, bcrypt
 from flask_login import UserMixin
 from sqlalchemy.dialects import mysql
@@ -54,9 +56,9 @@ class Object(db.Model):
     __abstract__ = True
     name = db.Column(db.String(256))
     path = db.Column(db.String(256))
-    size = db.Column(db.Integer)
+    size = db.Column(db.Integer)  # is_deleted
     description = db.Column(mysql.LONGTEXT)
-    creation_date = db.Column(db.DateTime)
+    creation_date = db.Column(db.DateTime, default=datetime.datetime.now().date())
 
 
 class File(Object):
