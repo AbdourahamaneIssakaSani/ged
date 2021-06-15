@@ -86,6 +86,35 @@ def upload_in_folder(id_folder):
     return redirect(url_for('user_bp.my_folders'))
 
 
+def icon_file_type(filename):
+    file_extension = os.path.splitext(filename)[1]
+    file_extension = file_extension.replace('.', '')
+    supported_video_extensions = {"mp4", "webm", "mkv", "avi", "m4v", "m4p", "mpeg", "3gp"}
+    supported_office_word_extensions = {"doc", "docx"}
+    supported_office_powerpoint_extensions = {"ppt", "pptx"}
+    supported_office_excel_extensions = {"xls", "xlsx"}
+    if file_extension == 'pdf':
+        return '-pdf'
+    elif file_extension in AUDIO or file_extension == "m4a":
+        return '-audio'
+    elif file_extension in supported_video_extensions:
+        return '-video'
+    elif file_extension in TEXT:
+        return '-alt'
+    elif file_extension in IMAGES:
+        return '-image'
+    elif file_extension in ARCHIVES:
+        return '-archive'
+    elif file_extension in supported_office_word_extensions:
+        return '-word'
+    elif file_extension in supported_office_powerpoint_extensions:
+        return '-powerpoint'
+    elif file_extension in supported_office_excel_extensions:
+        return '-excel'
+    else:
+        return ' '
+
+
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
@@ -98,36 +127,12 @@ def handle_upload():
             file.filename = secure_filename(file.filename)
             if key.startswith('file') and allowed_file(file.filename):
                 file.save(os.path.join(user_upload_folder, file.filename))
-                print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
+                # print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
                 encrypt_file_content(user_upload_folder + '\\' + file.filename)
-                print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
+                # print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
                 file_size_stored = os.path.getsize(user_upload_folder + '\\' + file.filename)
-                file_extension = os.path.splitext(user_upload_folder + '\\' + file.filename)[1]
-                print(file_extension)
-                supported_video_extensions = {".mp4", ".webm", ".mkv", ".avi", ".m4v", ".m4p", ".mpeg", ".3gp"}
-                supported_office_word_extensions = {".doc", ".docx"}
-                supported_office_powerpoint_extensions = {".ppt", ".pptx"}
-                supported_office_excel_extensions = {".xls", ".xlsx"}
-                file_type = ' '
-                if file_extension in supported_video_extensions:
-                    file_type = '-video'
-                elif file_extension in AUDIO:
-                    file_type = '-audio'
-                elif file_extension in TEXT:
-                    file_type = '-alt'
-                elif file_extension in IMAGES:
-                    file_type = '-image'
-                elif file_extension in ARCHIVES:
-                    file_type = '-archive'
-                elif file_extension in supported_office_word_extensions:
-                    file_type = '-word'
-                elif file_extension in supported_office_powerpoint_extensions:
-                    file_type = '-powerpoint'
-                elif file_extension in supported_office_excel_extensions:
-                    file_type = '-excel'
-                else:
-                    pass
-                print(file_type)
+                file_type = icon_file_type(user_upload_folder + '\\' + file.filename)
+                # print('fichier de type : '+file_type)
                 n_file = File(
                     name=original_file_name,
                     path=user_upload_folder + '\\' + file.filename,

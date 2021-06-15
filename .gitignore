@@ -1,4 +1,5 @@
 .idea
 *.pyc
+migrations/
 instance/
 app/user/uploads
