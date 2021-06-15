@@ -3,6 +3,7 @@ import datetime
 
 from flask import render_template, request, redirect, url_for, send_file
 from flask_login import login_required, current_user
+from flask_uploads import AUDIO, TEXT, IMAGES, ARCHIVES
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from app.user import user_bp
@@ -101,11 +102,37 @@ def handle_upload():
                 encrypt_file_content(user_upload_folder + '\\' + file.filename)
                 print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
                 file_size_stored = os.path.getsize(user_upload_folder + '\\' + file.filename)
-                print(file.content_type)
+                file_extension = os.path.splitext(user_upload_folder + '\\' + file.filename)[1]
+                print(file_extension)
+                supported_video_extensions = {".mp4", ".webm", ".mkv", ".avi", ".m4v", ".m4p", ".mpeg", ".3gp"}
+                supported_office_word_extensions = {".doc", ".docx"}
+                supported_office_powerpoint_extensions = {".ppt", ".pptx"}
+                supported_office_excel_extensions = {".xls", ".xlsx"}
+                file_type = ' '
+                if file_extension in supported_video_extensions:
+                    file_type = '-video'
+                elif file_extension in AUDIO:
+                    file_type = '-audio'
+                elif file_extension in TEXT:
+                    file_type = '-alt'
+                elif file_extension in IMAGES:
+                    file_type = '-image'
+                elif file_extension in ARCHIVES:
+                    file_type = '-archive'
+                elif file_extension in supported_office_word_extensions:
+                    file_type = '-word'
+                elif file_extension in supported_office_powerpoint_extensions:
+                    file_type = '-powerpoint'
+                elif file_extension in supported_office_excel_extensions:
+                    file_type = '-excel'
+                else:
+                    pass
+                print(file_type)
                 n_file = File(
                     name=original_file_name,
                     path=user_upload_folder + '\\' + file.filename,
                     size=file_size_stored,
+                    type=file_type,
                     owner=current_user.get_id()
                 )
                 #             description=simple_form.description.data,
@@ -159,6 +186,7 @@ def restore_file(id_file):
 @login_required
 def delete(id_file):
     file = File.query.filter_by(id=id_file).first()
+    os.remove(file.path)
     db.session.delete(file)
     db.session.commit()
     return redirect(url_for('user_bp.trash'))
