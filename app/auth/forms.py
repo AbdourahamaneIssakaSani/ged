@@ -11,11 +11,12 @@ from wtforms.validators import InputRequired, Email, DataRequired, ValidationErr
 class LoginForm(FlaskForm):
     email = TextField(
         label='Adresse email',
-        validators=[DataRequired(message='Vous devez fournir votre adresse email'), Email(message='Donnez une adresse email valide !')]
+        validators=[DataRequired(message='Vous devez fournir votre adresse email'),
+                    Email(message='Donnez une adresse email valide !')]
     )
-    password = PasswordField(label='Mot de passe', validators=[DataRequired(message='Vous devez fournir votre mot de passe')])
+    password = PasswordField(label='Mot de passe',
+                             validators=[DataRequired(message='Vous devez fournir votre mot de passe')])
     remember_me = BooleanField('Se souvenir de moi')
-    submit = SubmitField(label='Se connecter')
 
 
 class RegisterForm(FlaskForm):
@@ -37,6 +38,4 @@ class RegisterForm(FlaskForm):
     agree_terms = BooleanField(label='J’accepte les conditions d’utilisation',
                                validators=[DataRequired(message='Vous devez accepter les conditions d’utilisation')])
 
-    submit = SubmitField(label='Valider')
-# //TODO : Raise validation error in frontend
 # //TODO : Manage terms of use page

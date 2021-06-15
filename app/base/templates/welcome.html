@@ -1,125 +1,113 @@
-{% extends 'bootstrap/base.html' %} {% block styles %} {{ super() }} {% assets'base_style' %}
-    <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"/>
-{% endassets %}
-    <!-- Fontawesome -->
-    <link type="text/css" href="{{ url_for('static',filename='vendor/@fortawesome/fontawesome-free/css/all.min.css') }}"
-          rel="stylesheet"/>
-
-    <!-- Sweet Alert -->
-    <link type="text/css" href="{{ url_for('static',filename='vendor/sweetalert2/dist/sweetalert2.min.css') }}"
-          rel="stylesheet"/>
-
-    <!-- Notyf -->
-    <link type="text/css" href="{{ url_for('static',filename='vendor/notyf/notyf.min.css') }}" rel="stylesheet"/>
-{% endblock styles %}
-{% block body -%}
-    {% block navbar %}
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
-                <div class="container">
-                    <div class="navbar-wrapper">
-                        <a class="navbar-text" href="/">
-                            <h3 class="font-weight-bold primary-color">NewDevFiles</h3>
-                        </a>
-                    </div>
-                    <button class="btn-outline-primary navbar-toggler d-md-none collapsed" type="button" data-toggle="collapse"
-                            data-target="#navigation-index" aria-controls="sidebarMenu" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon fas fa-bars"></span>
-                    </button>
-                    <div id="navigation-index" class="collapse navbar-collapse justify-content-end">
-                        <ul class="navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="modal" href="#register-modal">
-                                    <i class="fas fa-user-plus"></i>
-                                    Créer un compte
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="modal" href="#login-modal">
-                                    <i class="fas fa-fingerprint"></i>
-                                    Se connecter
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="collapse-close d-md-none">
-                        <a href="#navigation-index" class="fas fa-times" data-toggle="collapse" data-target="#navigation-index"
+{% extends 'layout-fullscreen.html' %}
+{% block navbar %}
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
+            <div class="container">
+                <div class="navbar-wrapper">
+                    <a class="navbar-text" href="/">
+                        <h3 class="font-weight-bold primary-color">NewDevFiles</h3>
+                    </a>
+                </div>
+                <button class="btn-outline-primary navbar-toggler d-md-none collapsed" type="button"
+                        data-toggle="collapse"
+                        data-target="#navigation-index" aria-controls="sidebarMenu" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon fas fa-bars"></span>
+                </button>
+                <div id="navigation-index" class="collapse navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="modal" href="#register-modal">
+                                <i class="fas fa-user-plus"></i>
+                                Créer un compte
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="modal" href="#login-modal">
+                                <i class="fas fa-fingerprint"></i>
+                                Se connecter
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="collapse-close d-md-none">
+                        <a href="#navigation-index" class="fas fa-times" data-toggle="collapse"
+                           data-target="#navigation-index"
                            aria-controls="navigation-index" aria-expanded="true" aria-label="Toggle navigation"></a>
                     </div>
-                    </div>
                 </div>
-            </nav>
-            <!-- Login Modal Content -->
-            <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="modal-form"
-                 aria-hidden="true">
-                <div class="row justify-content-center form-bg-image"
-                     data-background-lg="{{ url_for('static', filename='/img/illustrations/signin.svg') }} }}"
-                     style="background: url({{ url_for('static', filename='/img/illustrations/signin.svg') }});">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body p-0">
-                                <div class="card border-light p-3 p-lg-4">
-                                    <button type="button" class="btn-close ms-auto" data-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    <div class="card-header border-0 text-center pb-0">
-                                        <h2 class="h4">Se connecter</h2>
-                                        <span>Veuillez vous identifer</span>
-                                    </div>
-                                    <div class="card-body p-0 pl-lg-3">
-                                        {% include 'login-form.html' %}
-                                        <div class="d-flex justify-content-center align-items-center mt-4">
+            </div>
+        </nav>
+        <!-- Login Modal Content -->
+        <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="modal-form"
+             aria-hidden="true">
+            <div class="row justify-content-center form-bg-image"
+                 data-background-lg="{{ url_for('static', filename='/img/illustrations/signin.svg') }} }}"
+                 style="background: url({{ url_for('static', filename='/img/illustrations/signin.svg') }});">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <div class="card border-light p-3 p-lg-4">
+                                <button type="button" class="btn-close ms-auto" data-dismiss="modal"
+                                        aria-label="Close"></button>
+                                <div class="card-header border-0 text-center pb-0">
+                                    <h2 class="h4">Se connecter</h2>
+                                    <span>Veuillez vous identifer</span>
+                                </div>
+                                <div class="card-body p-0 pl-lg-3">
+                                    {% include 'login-form.html' %}
+                                    <div class="d-flex justify-content-center align-items-center mt-4">
                                       <span class="fw-normal">
                                           Pas de compte?
                                           <a data-dismiss="modal" data-toggle="modal" href="#register-modal"
                                              class="fw-bold">Créez-en un ici</a>
                                       </span>
-                                        </div>
-                                        {% include 'footer.html' %}
                                     </div>
+                                    {% include 'footer.html' %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- End of Login Modal Content -->
-            <!-- Register Modal Content -->
-            <div class="modal fade" id="register-modal" tabindex="-1" role="dialog" aria-labelledby="modal-form-signup"
-                 aria-hidden="true">
-                <div class="row justify-content-center form-bg-image"
-                     data-background-lg="{{ url_for('static', filename='/img/illustrations/signin.svg') }}"
-                     style="background: url({{ url_for('static', filename='/img/illustrations/signin.svg') }});">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body p-0">
-                                <div class="card border-light p-3 p-lg-4">
-                                    <button type="button" class="btn-close ms-auto" data-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    <div class="card-header border-0 text-center pb-0">
-                                        <h2 class="h4">Créer un compte</h2>
-                                        <span>veuillez remplir tous les champs </span>
-                                    </div>
-                                    <div class="card-body p-0 pl-lg-3">
-                                        {% include 'register-form.html' %}
-                                        <div class="d-flex justify-content-center align-items-center mt-4">
+        </div>
+        <!-- End of Login Modal Content -->
+        <!-- Register Modal Content -->
+        <div class="modal fade" id="register-modal" tabindex="-1" role="dialog" aria-labelledby="modal-form-signup"
+             aria-hidden="true">
+            <div class="row justify-content-center form-bg-image"
+                 data-background-lg="{{ url_for('static', filename='/img/illustrations/signin.svg') }}"
+                 style="background: url({{ url_for('static', filename='/img/illustrations/signin.svg') }});">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-0">
+                            <div class="card border-light p-3 p-lg-4">
+                                <button type="button" class="btn-close ms-auto" data-dismiss="modal"
+                                        aria-label="Close"></button>
+                                <div class="card-header border-0 text-center pb-0">
+                                    <h2 class="h4">Créer un compte</h2>
+                                    <span>veuillez remplir tous les champs </span>
+                                </div>
+                                <div class="card-body p-0 pl-lg-3">
+                                    {% include 'register-form.html' %}
+                                    <div class="d-flex justify-content-center align-items-center mt-4">
                                       <span class="fw-normal">
                                           Avez-vous déjà un compte ?
                                           <a data-dismiss="modal" data-toggle="modal" href="#login-modal"
                                              class="fw-bold">Connectez-vous ici</a>
                                       </span>
-                                        </div>
-                                        {% include 'footer.html' %}
                                     </div>
+                                    {% include 'footer.html' %}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- End of Register Modal Content -->
-        </header>
-
-    {% endblock navbar %} {% block content -%}
+        </div>
+        <!-- End of Register Modal Content -->
+    </header>
+{% endblock navbar %}
+{% block content -%}
     <main>
         <section class="vh-100 d-flex align-items-center">
             <div class="container-fluid">
@@ -220,6 +208,4 @@
             </div>
         </section>
     </main>
-{%- endblock content %} {% block scripts %} {{ super() }}
-    <script src="{{ url_for('static', filename='dist/js/base.min.js') }}"></script>
-{% endblock scripts %} {%- endblock body %}
+{%- endblock content %}
