@@ -107,7 +107,7 @@
                         </div>
                     </li>
                     <li class="nav-item ">
-                        <a href="{{ url_for('user_bp.folders') }}" class="nav-link">
+                        <a href="{{ url_for('user_bp.my_folders') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-folder"></span></span>
                             <span class="sidebar-text">Mes Dossiers</span>
                         </a>
@@ -164,33 +164,24 @@
                     <h2 class="h6 modal-title">Créer un dossier</h2>
                     <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-4">
-                        <label for="usernameValidate">Nom du dossier</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
-                        <input type="text" class="form-control" id="usernameValidate" required>
-                        </div>
-                        <div class="invalid-feedback">
-                            Donnez un nom !
-                        </div>
-                    </div>
-                     <div class="mb-4">
-                        <label for="usernameValidate">Nom du dossier</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
-                        <input type="text" class="form-control" id="usernameValidate" required>
-                        </div>
-                        <div class="invalid-feedback">
-                            Donnez un nom !
+                <form action="{{ url_for('user_bp.new_folder') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="name">Nom du dossier</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Donnez un nom !
+                            </div>
                         </div>
                     </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-link text-gray ms-auto" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Créer</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -1,7 +1,20 @@
 {% extends 'layout.html' %}
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
+{% endblock %}
 {% block content %}
     {{ super() }}
     <style>
+        #singleFileInput .dropzone {
+            border: #262b40 2px dashed;
+            background-color: whitesmoke;
+            min-height: 250px;
+            height: 250px;
+            overflow: auto;
+            width: 100%;
+        }
+
         .folder {
             width: 10vw;
             cursor: pointer;
@@ -50,11 +63,12 @@
             display: none;
         }
     </style>
-    <div class="container" id="folders">
+    <div class="container-fluid" id="folders">
         <div class="row">
-            {% for file in range(17) %}
+            {% for folder in folders %}
                 <div class="col-1 p-3 m-3">
-                    <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ file }})" data-wow-delay="0.8s">
+                    <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ folder.id }})"
+                         data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
                             <a href="#" style="position: relative; bottom: 30px; right: 20px;">
@@ -64,7 +78,7 @@
                         <div class="folder-structure">
                             <div class="folder-title d-flex justify-content-center align-items-center">
                                 {#                            {{ file.name }}#}
-                                Dossier
+                                {{ folder.name }}
                             </div>
                             <div class="d-flex justify-content-between flex-row menu-label file-details">
                                 <span></span>
@@ -76,25 +90,293 @@
             {% endfor %}
         </div>
     </div>
-    {% for folder in range(17) %}
+    {% for folder in folders %}
+        <div class="container-fluid folder-files" id="folder-content-{{ folder.id }}" style="display: none;">
+            <button class="btn btn-outline-dark" onclick="displayFolderList()"><i class="fas fa-arrow-left"></i> Retour
+            </button>
+            <button class="btn btn-outline-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-plus"></i></button>
+            <div class="dropdown-menu" aria-labelledby="">
+                <a class="dropdown-item" href="#new-file-modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-file-upload pr-2"></i>
+                    Fichiers
+                </a>
+                <a class="dropdown-item" href="#new-folder-modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-folder-plus pr-2"></i>
+                    Dossier
+                </a>
+                <a class="dropdown-item"
+                   href="">
+                    <i class="fas fa-cloud-download-alt pr-2"></i>
+                    Télécharger
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-share pr-2"></i>
+                    Partager
+                </a>
+                <a class="dropdown-item"
+                   href="">
+                    <i class="fas fa-trash-alt pr-2"></i>
+                    Supprimer
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-info-circle pr-2"></i>
+                    Informations
+                </a>
+            </div>
+            <div id="grid">
+                <div class="row">
+                    {% for folder in folder.folders %}
+                        <div class="col-1 p-3 m-3">
+                            <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ folder.id }})"
+                                 data-wow-delay="0.8s">
+                                <div class="file-icon d-flex align-items-center justify-content-center">
+                                    <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
+                                    <a href="#" style="position: relative; bottom: 30px; right: 20px;">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </a>
+                                </div>
+                                <div class="folder-structure">
+                                    <div class="folder-title d-flex justify-content-center align-items-center">
+                                        {#                            {{ file.name }}#}
+                                        {{ folder.name }}
+                                    </div>
+                                    <div class="d-flex justify-content-between flex-row menu-label file-details">
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% for file in folder.files %}
+                        <div class="col-1 p-2 m-3">
+                            <div class="file p-4" data-wow-delay="0.8s">
+                                <div class="file-icon d-flex justify-content-around">
+                                    <i style="font-size: 10vh" class="fas fa-file-excel"></i>
+                                    <div class="dropdown" style="position: relative; top: 3px;">
+                                        <a class="" id="" data-toggle="dropdown" aria-haspopup="true"
+                                           aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="">
+                                            <a class="dropdown-item"
+                                               href="{{ url_for('user_bp.download', id_file=file.id) }}">
+                                                <i class="fas fa-cloud-download-alt pr-2"></i>
+                                                Télécharger
+                                            </a>
+                                            <a class="dropdown-item" href="#">
+                                                <i class="fas fa-share pr-2"></i>
+                                                Partager
+                                            </a>
+                                            <a class="dropdown-item"
+                                               href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
+                                                <i class="fas fa-trash-alt pr-2"></i>
+                                                Supprimer
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
+                                                <i class="fas fa-info-circle pr-2"></i>
+                                                Informations
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-title text-break text-truncate">
+                                        {{ file.name }}
+                                    </div>
+                                    <div class="d-flex justify-content-between flex-row menu-label file-details">
+                                        <span>{{ file.creation_date }}</span>
+                                        <span>{{ file.size }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-    <div class="container-fluid folder-files" id="folder-content-{{ folder }}" style="display: none;">
-        <button class="btn-outline-dark" onclick="displayFolderList()">Retour</button>
-        <p>Folder contain {{ folder }}</p>
-    </div>
+            <div class="table-responsive py-4" id="table">
+                <table class="table table-flush table-hover" id="datatable">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
+                        <th>Nom</th>
+                        <th></th>
+                        <th>Date de création</th>
+                        <th>Taille</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in folder.files %}
+                        <tr>
+                            <td class="p-3"><input type="checkbox" class="to-check"></td>
+                            <td class="d-flex flex-row">
+                                <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file-pdf"></i></div>
+                                <div class="p-2 text-wrap">
+                                    {{ file.name }}
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                <div class="dropdown">
+                                    <a class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                       aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.download', id_file=file.id) }}">
+                                            <i class="fas fa-cloud-download-alt pr-2"></i>
+                                            Télécharger
+                                        </a>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-share pr-2"></i>
+                                            Partager
+                                        </a>
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
+                                            <i class="fas fa-trash-alt pr-2"></i>
+                                            Supprimer
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
+                                            <i class="fas fa-info-circle pr-2"></i>
+                                            Informations
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                {{ file.creation_date }}
+                            </td>
+                            <td class="p-3">
+                                {{ file.size }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     {% endfor %}
+    <!-- Modal Content -->
+    {% for folder in folders %}
+        <div class="modal modal-fullscreen fade" id="new-file-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modalTitleNotify" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
+                            <div class="col text-center">
+                                <div id="singleFileInput">
+                                    <form action="{{ url_for('user_bp.upload_in_folder', id_folder=folder.id) }}"
+                                          method="post"
+                                          enctype="multipart/form-data"
+                                          class="dropzone dz-clickable" id="inFolderUpload">
+                                        <div class="dz-message">
+                                            <div class="align-items-center">
+                                                <img class="img-fluid w-20" alt="" style="max-width: 200px"
+                                                     src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
+                                            </div>
+                                            Déposez votre fichier ici
+                                        </div>
+                                    </form>
+                                </div>
+                                <button type="submit" id="loadFileInFolder" class="btn btn-outline-dark" value="">
+                                    Charger
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <!-- End of Modal Content -->
+    {% for folder in folders %}
+        <div class="modal fade" id="new-folder-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modal-default"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Créer un dossier</h2>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('user_bp.new_folder_in_folder', id_folder=folder.id) }}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <label for="name">Nom du dossier</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Donnez un nom !
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                    data-dismiss="modal">Annuler
+                            </button>
+                            <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
     <script>
         function displayFolderContent(folderID) {
             //let folders = document.getElementsByClassName('folder');
             document.getElementById('folders').style.display = 'none';
-            document.getElementById('folder-content-'+folderID).style.display = 'block';
+            document.getElementById('folder-content-' + folderID).style.display = 'block';
         }
+
         function displayFolderList() {
-           let filesList = document.getElementsByClassName('folder-files');
-            for (let i=0;i<filesList.length;i++){
+            let filesList = document.getElementsByClassName('folder-files');
+            for (let i = 0; i < filesList.length; i++) {
                 filesList[i].style.display = 'none';
             }
             document.getElementById('folders').style.display = 'block';
         }
+
+        Dropzone.options.inFolderUpload = {
+            addRemoveLinks: true,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            autoProcessQueue: false,
+            dictRemoveFile: 'Effacer',
+            init: function () {
+                document.getElementById('loadFileInFolder').addEventListener(
+                    'click', () => {
+                        this.processQueue();
+                    }
+                );
+
+                this.on('complete', (file) => {
+                    //this.addRemoveLinks :false;
+                    setTimeout(() => {
+                        this.removeFile(file);
+                    }, 3000);
+                });
+            },
+        }
     </script>
+    <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
+
 {% endblock %}

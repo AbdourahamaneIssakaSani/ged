@@ -1,5 +1,4 @@
 import datetime
-
 from app import db, login_manager, bcrypt
 from flask_login import UserMixin
 from sqlalchemy.dialects import mysql
@@ -56,9 +55,12 @@ class Object(db.Model):
     __abstract__ = True
     name = db.Column(db.String(256))
     path = db.Column(db.String(256))
-    size = db.Column(db.Integer)  # is_deleted
+    size = db.Column(db.Integer)
     description = db.Column(mysql.LONGTEXT)
     creation_date = db.Column(db.DateTime, default=datetime.datetime.now().date())
+    is_deleted = db.Column(db.Integer, default=int(0))
+    delete_date = db.Column(db.DateTime)
+    is_shared = db.Column(db.Integer, default=0)
 
 
 class File(Object):
@@ -71,6 +73,7 @@ class File(Object):
 class Folder(Object):
     id = db.Column('id_folder', db.Integer, primary_key=True, autoincrement=True)
     files = db.relationship('File')
+    folders = db.relationship('Folder')
     parent_folder = db.Column(db.Integer, db.ForeignKey(column='folder.id_folder', name='fk_folder_parent'),
                               nullable=True)
 
