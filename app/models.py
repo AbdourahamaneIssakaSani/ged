@@ -88,9 +88,11 @@ class Message(db.Model):
 class SharingSpace(db.Model):
     __tablename__ = 'space'
     id = db.Column('id_space', db.Integer, primary_key=True, autoincrement=True)
-    members = db.Column(db.JSON, default=None)
-    data_shared = db.Column(db.JSON)
-    files = db.Column(db.JSON)
+    name = db.Column(db.String(50))
+    is_archived = db.Column(db.Integer, default=0)
+    members = db.relationship('Members')
+    folders = db.relationship('SpaceFolders')
+    files = db.relationship('SpaceFiles')
     messages = db.relationship('Message')
     archive = db.relationship('Archive')
 
@@ -100,3 +102,26 @@ class Archive(db.Model):
     archive_date = db.Column(db.DateTime)
     space_archived = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_archive_space'),
                                nullable=True)
+
+
+class Members(db.Model):
+    user = db.Column(db.Integer,  primary_key=True, autoincrement=False)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.now())
+    date_revoked = db.Column(db.DateTime)
+    space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_members_space'))
+
+
+class SpaceFiles(db.Model):
+    __tablename__ = 'spacefiles'
+    file = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.now())
+    date_revoked = db.Column(db.DateTime)
+    space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_files_space'))
+
+
+class SpaceFolders(db.Model):
+    __tablename__ = 'spacefolders'
+    folder = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    date_added = db.Column(db.DateTime, default=datetime.datetime.now())
+    date_revoked = db.Column(db.DateTime)
+    space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_folders_space'))

@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from app.user import user_bp
 from .utils import encrypt_file_content, allowed_file, decrypt_file_content
 from .. import db
-from ..models import File, Folder
+from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -201,23 +201,57 @@ def delete(id_file):
 @login_required
 def my_files():
     files = File.query.filter_by(owner=current_user.get_id(), is_deleted=0).all()
-    return render_template('files-list.html', title='Mes fichiers', files=files)
+    spaces = SharingSpace.query.all()
+    return render_template('files-list.html', title='Mes fichiers', files=files, spaces=spaces)
 
 
 @user_bp.route('folders', methods=['GET', 'POST'])
 @login_required
 def my_folders():
     folders = Folder.query.filter_by(parent_folder=None).options(joinedload('files'), joinedload('folders')).all()
-    print(folders)
-    for folder in folders:
-        print(folder.folders)
     return render_template('folders.html', title='Mes Dossiers', folders=folders)
 
 
-@user_bp.route('new-space', methods=['GET', 'POST'])
+@user_bp.route('new-space', methods=['POST'])
 @login_required
 def new_space():
-    return render_template('share-space.html', title='Paramètres')
+    space_name = request.form['name']
+    message_body = request.form['message']
+    n_space = SharingSpace(name=space_name)
+    message = Message(body=message_body, space=n_space, sender=current_user.get_id())
+    n_space.messages.append(message)
+    db.session.add(n_space)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_spaces'))
+
+
+@user_bp.route('spaces', methods=['GET', 'POST'])
+@login_required
+def my_spaces():
+    spaces = SharingSpace.query.filter_by(is_archived=0).all()
+    return render_template('share-space.html', title='Mes Espaces', spaces=spaces)
+
+
+@user_bp.route('share-file', methods=['POST'])
+@login_required
+def share_file():
+    file_id = request.form['file_id']
+    space_id = request.form['space_id']
+    space_file = SpaceFiles(file=file_id, space=space_id)
+    db.session.add(space_file)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_spaces'))
+
+
+@user_bp.route('share-folder', methods=['POST'])
+@login_required
+def share_folder():
+    file_id = request.form['folder_id']
+    space_id = request.form['space_id']
+    space_folder = SpaceFolders(file=file_id, space=space_id)
+    db.session.add(space_folder)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_spaces'))
 
 
 @user_bp.route('settings', methods=['GET', 'POST'])

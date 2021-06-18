@@ -98,7 +98,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item ">
-                                    <a href="{{ url_for('user_bp.new_space') }}" class="nav-link">
+                                    <a href="#newSpaceModal" data-toggle="modal" class="nav-link">
                                         <span class="sidebar-icon"><span class="fas fa-users"></span></span>
                                         <span class="sidebar-text">Espace</span>
                                     </a>
@@ -119,7 +119,7 @@
                         </a>
                     </li>
                     <li class="nav-item ">
-                        <a href="/transactions.html" class="nav-link">
+                        <a href="{{ url_for('user_bp.my_spaces') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-users"></span></span>
                             <span class="sidebar-text">Mes espaces</span>
                         </a>
@@ -178,7 +178,45 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="newSpaceModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Créer un espace</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.new_space') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="name">Nom de l’espace</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><span class="fas fa-users"></span></span>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Donnez un nom !
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message">Votre message</label>
+                            <textarea class="form-control" placeholder="Message" name="message"
+                                      rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
+                            Annuler
+                        </button>
                         <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
                     </div>
                 </form>

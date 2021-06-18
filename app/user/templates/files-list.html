@@ -59,31 +59,40 @@
         #table {
             display: none;
         }
-        .fa-file{
-            color:gray;
+
+        .fa-file {
+            color: gray;
         }
-        .fa-file-pdf{
+
+        .fa-file-pdf {
             color: darkred;
         }
-        .fa-file-excel{
+
+        .fa-file-excel {
             color: #1c7430;
         }
-        .fa-file-alt{
-            color: #d39e00;
+
+        .fa-file-alt {
+            color: #42316b;
         }
-        .fa-file-word{
+
+        .fa-file-word {
             color: rgba(24, 91, 226, 0.98);
         }
-        .fa-file-powerpoint{
+
+        .fa-file-powerpoint {
             color: #c73c06;
         }
-        .fa-file-archive{
+
+        .fa-file-archive {
             color: #d39e00;
         }
-        .fa-file-image{
+
+        .fa-file-image {
             color: rgba(26, 122, 217, 0.87);
         }
-        .fa-file-video{
+
+        .fa-file-video {
             color: #936e35;
         }
     </style>
@@ -94,7 +103,7 @@
                     <div class="col-1 p-2 m-3">
                         <div class="file p-4" data-wow-delay="0.8s">
                             <div class="file-icon d-flex justify-content-around">
-                                <i style="font-size: 10vh" class="fas fa-file{{file.type }}"></i>
+                                <i style="font-size: 10vh" class="fas fa-file{{ file.type }}"></i>
                                 <div class="dropdown" style="position: relative; top: 3px;">
                                     <a class="" id="" data-toggle="dropdown" aria-haspopup="true"
                                        aria-expanded="false">
@@ -106,7 +115,7 @@
                                             <i class="fas fa-cloud-download-alt pr-2"></i>
                                             Télécharger
                                         </a>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" data-toggle="modal" href="#modal-share-{{ file.id }}">
                                             <i class="fas fa-share pr-2"></i>
                                             Partager
                                         </a>
@@ -154,7 +163,7 @@
                     <tr>
                         <td class="p-3"><input type="checkbox" class="to-check"></td>
                         <td class="d-flex flex-row">
-                            <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file{{file.type }}"></i></div>
+                            <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file{{ file.type }}"></i></div>
                             <div class="p-2 text-wrap">
                                 {{ file.name }}
                             </div>
@@ -174,7 +183,8 @@
                                         <i class="fas fa-share pr-2"></i>
                                         Partager
                                     </a>
-                                    <a class="dropdown-item" href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
+                                    <a class="dropdown-item"
+                                       href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
                                         <i class="fas fa-trash-alt pr-2"></i>
                                         Supprimer
                                     </a>
@@ -200,28 +210,68 @@
     </div>
     <!-- Modal Content -->
     {% for file in files %}
-    <div class="modal modal-info fade" id="modal-{{ file.id }}" tabindex="-1" role="dialog" aria-labelledby="modalTitleNotify" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="py-3 text-white">
-                        <h2 class="h4 modal-title my-3">Important message!</h2>
-                        <p>Nom : {{ file.name }}</p>
-                        <p>Crée le : {{ file.creation_date }}</p>
-                        <p>Taille sur le serveur : {{ file.size }}</p>
-                        <p>Partagé : Oui/Non</p>
+        <div class="modal modal-info fade" id="modal-{{ file.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modalTitleNotify" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    <div class="modal-body">
+                        <div class="py-3 text-white">
+                            <h2 class="h4 modal-title my-3">Important message!</h2>
+                            <p>Nom : {{ file.name }}</p>
+                            <p>Crée le : {{ file.creation_date }}</p>
+                            <p>Taille sur le serveur : {{ file.size }}</p>
+                            <p>Partagé : Oui/Non</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endfor %}
+    <!-- End of Modal Content -->
+    <!-- Modal Content -->
+    {% for file in files %}
+        <div class="modal fade" id="modal-share-{{ file.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modalTitleNotify" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modalTitleNotify">Partager</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('user_bp.share_file') }}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-4">
+                            <input name="file_id" value="{{ file.id }}" hidden>
+                                <label for="space_id">Espace</label>
+                                <select class="form-select" id="country" name="space_id" aria-label="Default select example">
+                                    <option selected>Open this select menu</option>
+                                    {% for space in spaces %}
+                                        <option value="{{ space.id }}">{{ space.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                    data-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endfor %}
     <!-- End of Modal Content -->
     <script>

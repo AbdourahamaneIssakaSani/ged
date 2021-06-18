@@ -1,5 +1,86 @@
 {% extends 'layout.html' %}
 {% block content %}
     {{ super() }}
-    <p><i class="fas fa-people-arrows"></i></p>
+     <style>
+        #singleFileInput .dropzone {
+            border: #262b40 2px dashed;
+            background-color: whitesmoke;
+            min-height: 250px;
+            height: 250px;
+            overflow: auto;
+            width: 100%;
+        }
+
+        .folder {
+            width: 10vw;
+            cursor: pointer;
+        }
+
+        .folder:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        .menu-label {
+            color: #7a7a7a;
+            font-size: 0.75em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .menu-label:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .menu-label:not(:last-child) {
+            margin-bottom: 1em;
+        }
+
+        div.file {
+        {#width: 100px;#} width: 10vw;
+        }
+
+        .file:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        div.file-title {
+            width: 100%;
+            font-size: 0.9vw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.file-details {
+            font-size: 1.1vh;
+        }
+
+        #table {
+            display: none;
+        }
+    </style>
+    <div class="container-fluid" id="folders">
+        <div class="row">
+            <!-- Folder List-->
+            {% for space in spaces%}
+                <div class="col-1 p-3 m-3">
+                    <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ space.id }})"
+                         data-wow-delay="0.8s">
+                        <div class="file-icon d-flex align-items-center justify-content-center">
+                            <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
+                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </a>
+                        </div>
+                        <div class="folder-structure">
+                            <div class="folder-title d-flex justify-content-center align-items-center">
+                                {{ space.name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <!-- End of Folder List-->
+        </div>
+    </div>
 {% endblock %}
