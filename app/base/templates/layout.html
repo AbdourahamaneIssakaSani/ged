@@ -14,6 +14,12 @@
 
     <!-- Notyf -->
     <link type="text/css" href="{{ url_for('static',filename='vendor/notyf/notyf.min.css') }}" rel="stylesheet"/>
+    <style>
+    .active-folder-link{
+
+            background-color: rgba(203, 188, 154, 0.25) !important;
+        }
+    </style>
 {% endblock styles %}
 {% block body -%}
     {% block navbar %}
@@ -106,12 +112,68 @@
                             </ul>
                         </div>
                     </li>
+                    {% if folders %}
+                    <li class="nav-item ">
+                      <span class="nav-link d-flex justify-content-between align-items-center"
+                            data-toggle="collapse" data-target="#submenu-folder">
+                        <span>
+                          <span class="sidebar-icon"><span class="fas fa-folder-open"></span></span>
+                          <span class="sidebar-text">Dossiers</span>
+                        </span>
+                        <span class="link-arrow"><span class="fas fa-chevron-right"></span></span>
+                      </span>
+                        <div class="multi-level collapsed collapse show" role="list" id="submenu-folder" aria-expanded="true">
+                            {% macro sub_folder(folder) %}
+                                <div class="multi-level " role="list"
+                                     aria-expanded="false">
+                                    <ul class="flex-column nav">
+                                        {% if folder.folders %}
+                                            <li class="nav-item ">
+                                                <div class="nav-link folder-link d-flex justify-content-between">
+                                                    <a onclick="displayFolderContent({{ folder.id }})">
+                                                    <span class="sidebar-icon"><span
+                                                            class="fas fa-folder"></span></span>
+                                                    <span class="sidebar-text">{{ folder.name }}</span></a>
+                                                    <a class="link-arrow"data-toggle="collapse" data-target="#submenu-{{ folder.id }}" ><span
+                                                            class="fas fa-chevron-right"></span></a>
+                                                </div>
+                                                <div class="multi-level collapse ml-4" role="list"
+                                                     id="submenu-{{ folder.id }}"
+                                                     aria-expanded="false">
+                                                    <ul class="flex-column nav"
+                                                        style="border-left: whitesmoke dashed 0.1rem">
+                                                        {% for child in folder.folders %}
+                                                            {{ sub_folder(child) }}
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {#                                                    {{ sub_folder(folder.folders) }}#}
+                                                </div>
+                                            </li>
+                                        {% else %}
+                                            <li class="nav-item ">
+                                                <a class="nav-link" href="{{ url_for('user_bp.new_file') }}">
+                                                    <span class="sidebar-icon"><span
+                                                            class="fas fa-folder"></span></span>
+                                                    <span class="sidebar-text">{{ folder.name }}</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endmacro %}
+                            {% for folder in folders %}
+                                {{ sub_folder(folder) }}
+                            {% endfor %}
+                        </div>
+                    </li>
+                    {% else %}
                     <li class="nav-item ">
                         <a href="{{ url_for('user_bp.my_folders') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-folder"></span></span>
                             <span class="sidebar-text">Mes Dossiers</span>
                         </a>
                     </li>
+                    {% endif %}
                     <li class="nav-item ">
                         <a href="{{ url_for('user_bp.my_files') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-file-alt"></span></span>

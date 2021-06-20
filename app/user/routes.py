@@ -74,10 +74,12 @@ def upload_in_folder(id_folder):
                 file.save(os.path.join(folder.path, file.filename))
                 encrypt_file_content(folder.path + '\\' + file.filename)
                 file_stored_size = os.path.getsize(folder.path + '\\' + file.filename)
+                file_type = icon_file_type(folder.path + '\\' + file.filename)
                 n_file = File(
                     name=original_file_name,
                     path=folder.path + '\\' + file.filename,
                     size=file_stored_size,
+                    type=file_type,
                     folder=folder.id,
                     owner=current_user.get_id()
                 )
@@ -205,11 +207,32 @@ def my_files():
     return render_template('files-list.html', title='Mes fichiers', files=files, spaces=spaces)
 
 
+def sub_folders(folder, n=1):
+    if folder.folders:
+        for child_folder in folder.folders:
+            print('-' * n + child_folder.name)
+        n += 1
+        for child_folder in folder.folders:
+            sub_folders(child_folder, n)
+
+
 @user_bp.route('folders', methods=['GET', 'POST'])
 @login_required
 def my_folders():
-    folders = Folder.query.filter_by(parent_folder=None).options(joinedload('files'), joinedload('folders')).all()
+    folders = Folder.query.filter_by(parent_folder=None).all()
+
+    # for folder in folders:
+    #     print(folder.name)  # parent folder
+    #     sub_folders(folder)
+
     return render_template('folders.html', title='Mes Dossiers', folders=folders)
+
+
+@user_bp.route('folder/<id_folder>', methods=['GET', 'POST'])
+@login_required
+def my_folder(id_folder):
+    folder = Folder.query.filter_by(parent_folder=None).options(joinedload('files'), joinedload('folders')).all()
+    return folder
 
 
 @user_bp.route('new-space', methods=['POST'])
@@ -230,6 +253,14 @@ def new_space():
 def my_spaces():
     spaces = SharingSpace.query.filter_by(is_archived=0).all()
     return render_template('share-space.html', title='Mes Espaces', spaces=spaces)
+
+
+@user_bp.route('space/<id_space>', methods=['GET', 'POST'])
+@login_required
+def space_content(id_space):
+    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
+    print(space.name)
+    return render_template('space-content.html', title='Espace', space=space)
 
 
 @user_bp.route('share-file', methods=['POST'])

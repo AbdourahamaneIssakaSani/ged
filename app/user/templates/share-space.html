@@ -35,7 +35,7 @@
             margin-bottom: 1em;
         }
 
-        div.file {
+        .file {
         {#width: 100px;#} width: 10vw;
         }
 
@@ -43,7 +43,7 @@
             background-color: rgba(195, 200, 229, 0.29);
         }
 
-        div.file-title {
+        .file-title {
             width: 100%;
             font-size: 0.9vw;
             overflow: hidden;
@@ -51,7 +51,7 @@
             text-overflow: ellipsis;
         }
 
-        div.file-details {
+        .file-details {
             font-size: 1.1vh;
         }
 
@@ -64,7 +64,7 @@
             <!-- Folder List-->
             {% for space in spaces%}
                 <div class="col-1 p-3 m-3">
-                    <div class="folder wow fadeInDown" ondblclick="displayFolderContent({{ space.id }})"
+                    <a href="{{ url_for('user_bp.space_content',id_space=space.id) }}" class="folder wow fadeInDown"
                          data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
@@ -77,7 +77,7 @@
                                 {{ space.name }}
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             {% endfor %}
             <!-- End of Folder List-->
