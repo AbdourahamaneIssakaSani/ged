@@ -2,6 +2,7 @@ import os.path
 import datetime
 
 from flask import render_template, request, redirect, url_for, send_file
+from flask.json import dump
 from flask_login import login_required, current_user
 from flask_uploads import AUDIO, TEXT, IMAGES, ARCHIVES
 from sqlalchemy.orm import joinedload
@@ -9,7 +10,7 @@ from werkzeug.utils import secure_filename
 from app.user import user_bp
 from .utils import encrypt_file_content, allowed_file, decrypt_file_content
 from .. import db
-from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders
+from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -259,8 +260,23 @@ def my_spaces():
 @login_required
 def space_content(id_space):
     space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
-    print(space.name)
-    return render_template('space-content.html', title='Espace', space=space)
+    folders = Folder.query.filter_by(parent_folder=None).all()
+    files = File.query.filter_by(folder=None).all()
+    users = User.query.filter(User.id != current_user.get_id()).all()
+    space_folders = []
+    shared_folders = SpaceFolders.query.all()
+    for id_folder in shared_folders:
+        folder = Folder.query.filter_by(id=id_folder.folder).first()
+        space_folders.append(folder)
+    return render_template(
+        'space-content.html',
+        title='Espace',
+        space=space,
+        space_folders=space_folders,
+        folders_to_share=folders,
+        files_to_share=files,
+        users=users
+    )
 
 
 @user_bp.route('share-file', methods=['POST'])
@@ -274,12 +290,29 @@ def share_file():
     return redirect(url_for('user_bp.my_spaces'))
 
 
+@user_bp.route('shared-files/<id_space>', methods=['GET'])
+@login_required
+def shared_files(id_space):
+    space = SharingSpace.query.filter_by(id=id_space).first()
+    files = SpaceFiles.query.filter_by(space=id_space).all()
+    space_files = []
+    for id_file in files:
+        file = File.query.filter_by(id=id_file.file).first()
+        space_files.append(file)
+    return render_template(
+        'shared-files.html',
+        title='Fichiers partagés',
+        space=space,
+        space_files=space_files,
+    )
+
+
 @user_bp.route('share-folder', methods=['POST'])
 @login_required
 def share_folder():
-    file_id = request.form['folder_id']
+    folder_id = request.form['folder_id']
     space_id = request.form['space_id']
-    space_folder = SpaceFolders(file=file_id, space=space_id)
+    space_folder = SpaceFolders(folder=folder_id, space=space_id)
     db.session.add(space_folder)
     db.session.commit()
     return redirect(url_for('user_bp.my_spaces'))
