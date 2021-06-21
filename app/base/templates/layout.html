@@ -14,9 +14,107 @@
 
     <!-- Notyf -->
     <link type="text/css" href="{{ url_for('static',filename='vendor/notyf/notyf.min.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
     <style>
         .active-folder-link {
             background-color: rgba(203, 188, 154, 0.25) !important;
+        }
+
+        #singleFileInput .dropzone::after {
+            border: #f1ab5c 2px dashed;
+            background-color: #f1ab5c;
+        }
+        #singleFileInput .dropzone {
+            border: #262b40 2px dashed;
+            background-color: whitesmoke;
+            min-height: 250px;
+            height: 250px;
+            overflow: auto;
+            width: 100%;
+        }
+
+        .folder {
+            width: 10vw;
+            cursor: pointer;
+        }
+
+        .folder:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        .menu-label {
+            color: #7a7a7a;
+            font-size: 0.75em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .menu-label:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .menu-label:not(:last-child) {
+            margin-bottom: 1em;
+        }
+
+        div.file {
+        {#width: 100px;#} width: 10vw;
+        }
+
+        .file:hover {
+            background-color: rgba(195, 200, 229, 0.29);
+        }
+
+        div.file-title {
+            width: 100%;
+            font-size: 0.9vw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        div.file-details {
+            font-size: 1.1vh;
+        }
+
+        #table {
+            display: none;
+        }
+
+        .fa-file {
+            color: gray;
+        }
+
+        .fa-file-pdf {
+            color: darkred;
+        }
+
+        .fa-file-excel {
+            color: #1c7430;
+        }
+
+        .file-icon .fa-file-alt {
+            color: #42316b;
+        }
+
+        .fa-file-word {
+            color: rgba(24, 91, 226, 0.98);
+        }
+
+        .fa-file-powerpoint {
+            color: #c73c06;
+        }
+
+        .fa-file-archive {
+            color: #d39e00;
+        }
+
+        .fa-file-image {
+            color: rgba(26, 122, 217, 0.87);
+        }
+
+        .fa-file-video {
+            color: #936e35;
         }
     </style>
 {% endblock styles %}
@@ -154,7 +252,7 @@
                             </a>
                         </li>
                         <li class="nav-item ">
-                            <a href="{{ url_for('user_bp.my_files') }}" class="nav-link">
+                            <a href="{{ url_for('user_bp.space_members',id_space=space.id) }}" class="nav-link">
                                 <span class="sidebar-icon"><span class="fas fa-user-check"></span></span>
                                 <span class="sidebar-text">Membres</span>
                             </a>
@@ -167,6 +265,45 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% macro sub_folder(folder) %}
+                        <div class="multi-level " role="list"
+                             aria-expanded="false">
+                            <ul class="flex-column nav">
+                                {% if folder.folders %}
+                                    <li class="nav-item ">
+                                        <div class="nav-link folder-link d-flex justify-content-between">
+                                            <a onclick="displayFolderContent({{ folder.id }})">
+                                                    <span class="sidebar-icon"><span
+                                                            class="fas fa-folder"></span></span>
+                                                <span class="sidebar-text">{{ folder.name }}</span></a>
+                                            <a class="link-arrow" data-toggle="collapse"
+                                               data-target="#submenu-{{ folder.id }}"><span
+                                                    class="fas fa-chevron-right"></span></a>
+                                        </div>
+                                        <div class="multi-level collapse ml-4" role="list"
+                                             id="submenu-{{ folder.id }}"
+                                             aria-expanded="false">
+                                            <ul class="flex-column nav"
+                                                style="border-left: whitesmoke dashed 0.1rem">
+                                                {% for child in folder.folders %}
+                                                    {{ sub_folder(child) }}
+                                                {% endfor %}
+                                            </ul>
+                                            {#                                                    {{ sub_folder(folder.folders) }}#}
+                                        </div>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item ">
+                                        <a class="nav-link folder-link" onclick="displayFolderContent({{ folder.id }})">
+                                                    <span class="sidebar-icon"><span
+                                                            class="fas fa-folder"></span></span>
+                                            <span class="sidebar-text">{{ folder.name }}</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endmacro %}
                     {% if folders %}
                         <li class="nav-item ">
                             <span class="nav-link d-flex justify-content-between align-items-center"
@@ -179,51 +316,12 @@
                               </span>
                             <div class="multi-level collapsed collapse show" role="list" id="submenu-folder"
                                  aria-expanded="true">
-                                {% macro sub_folder(folder) %}
-                                    <div class="multi-level " role="list"
-                                         aria-expanded="false">
-                                        <ul class="flex-column nav">
-                                            {% if folder.folders %}
-                                                <li class="nav-item ">
-                                                    <div class="nav-link folder-link d-flex justify-content-between">
-                                                        <a onclick="displayFolderContent({{ folder.id }})">
-                                                    <span class="sidebar-icon"><span
-                                                            class="fas fa-folder"></span></span>
-                                                            <span class="sidebar-text">{{ folder.name }}</span></a>
-                                                        <a class="link-arrow" data-toggle="collapse"
-                                                           data-target="#submenu-{{ folder.id }}"><span
-                                                                class="fas fa-chevron-right"></span></a>
-                                                    </div>
-                                                    <div class="multi-level collapse ml-4" role="list"
-                                                         id="submenu-{{ folder.id }}"
-                                                         aria-expanded="false">
-                                                        <ul class="flex-column nav"
-                                                            style="border-left: whitesmoke dashed 0.1rem">
-                                                            {% for child in folder.folders %}
-                                                                {{ sub_folder(child) }}
-                                                            {% endfor %}
-                                                        </ul>
-                                                        {#                                                    {{ sub_folder(folder.folders) }}#}
-                                                    </div>
-                                                </li>
-                                            {% else %}
-                                                <li class="nav-item ">
-                                                    <a class="nav-link" href="{{ url_for('user_bp.new_file') }}">
-                                                    <span class="sidebar-icon"><span
-                                                            class="fas fa-folder"></span></span>
-                                                        <span class="sidebar-text">{{ folder.name }}</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                {% endmacro %}
                                 {% for folder in folders %}
                                     {{ sub_folder(folder) }}
                                 {% endfor %}
                             </div>
                         </li>
-                    {% elif space %}
+                    {% elif space and space_folders %}
                         <li class="nav-item ">
                             <span class="nav-link d-flex justify-content-between align-items-center"
                                   data-toggle="collapse" data-target="#submenu-folder">
@@ -235,49 +333,17 @@
                               </span>
                             <div class="multi-level collapsed collapse show" role="list" id="submenu-folder"
                                  aria-expanded="true">
-                                {% macro sub_folder(folder) %}
-                                    <div class="multi-level " role="list"
-                                         aria-expanded="false">
-                                        <ul class="flex-column nav">
-                                            {% if folder.folders %}
-                                                <li class="nav-item ">
-                                                    <div class="nav-link folder-link d-flex justify-content-between">
-                                                        <a onclick="displayFolderContent({{ folder.id }})">
-                                                    <span class="sidebar-icon"><span
-                                                            class="fas fa-folder"></span></span>
-                                                            <span class="sidebar-text">{{ folder.name }}</span></a>
-                                                        <a class="link-arrow" data-toggle="collapse"
-                                                           data-target="#submenu-{{ folder.id }}"><span
-                                                                class="fas fa-chevron-right"></span></a>
-                                                    </div>
-                                                    <div class="multi-level collapse ml-4" role="list"
-                                                         id="submenu-{{ folder.id }}"
-                                                         aria-expanded="false">
-                                                        <ul class="flex-column nav"
-                                                            style="border-left: whitesmoke dashed 0.1rem">
-                                                            {% for child in folder.folders %}
-                                                                {{ sub_folder(child) }}
-                                                            {% endfor %}
-                                                        </ul>
-                                                        {#                                                    {{ sub_folder(folder.folders) }}#}
-                                                    </div>
-                                                </li>
-                                            {% else %}
-                                                <li class="nav-item ">
-                                                    <a class="nav-link" href="{{ url_for('user_bp.new_file') }}">
-                                                    <span class="sidebar-icon"><span
-                                                            class="fas fa-folder"></span></span>
-                                                        <span class="sidebar-text">{{ folder.name }}</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                {% endmacro %}
                                 {% for folder in space_folders %}
                                     {{ sub_folder(folder) }}
                                 {% endfor %}
                             </div>
+                        </li>
+                    {% elif space %}
+                        <li class="nav-item ">
+                            <a href="{{ url_for('user_bp.shared_folders', id_space=space.id) }}" class="nav-link">
+                                <span class="sidebar-icon"><span class="fas fa-folder"></span></span>
+                                <span class="sidebar-text">Dossier partagés</span>
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item ">
@@ -327,73 +393,6 @@
             </div>
         </nav>
     {%- endblock navbar %}
-    <div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="h6 modal-title">Créer un dossier</h2>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ url_for('user_bp.new_folder') }}" method="post">
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <label for="name">Nom du dossier</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
-                                <input type="text" class="form-control" name="name" required>
-                            </div>
-                            <div class="invalid-feedback">
-                                Donnez un nom !
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="newSpaceModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="h6 modal-title">Créer un espace</h2>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ url_for('user_bp.new_space') }}" method="post">
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <label for="name">Nom de l’espace</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><span class="fas fa-users"></span></span>
-                                <input type="text" class="form-control" name="name" required>
-                            </div>
-                            <div class="invalid-feedback">
-                                Donnez un nom !
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="message">Votre message</label>
-                            <textarea class="form-control" placeholder="Message" name="message"
-                                      rows="4"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     <main class="content">
         {% block content -%}
             {% include 'navigation.html' %}
@@ -402,9 +401,12 @@
     <footer class="footer section py-5">
         {% include 'footer.html' %}
     </footer>
+    {% include 'includes/modal-boxes.html' %}
     {% block scripts %}
         {{ super() }}
         <script src="{{ url_for('static', filename='dist/js/base.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='dist/js/myScripts.js') }}"></script>
     {%- endblock scripts %}
 {% endblock body %}
 

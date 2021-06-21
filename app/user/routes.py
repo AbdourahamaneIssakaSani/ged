@@ -2,7 +2,6 @@ import os.path
 import datetime
 
 from flask import render_template, request, redirect, url_for, send_file
-from flask.json import dump
 from flask_login import login_required, current_user
 from flask_uploads import AUDIO, TEXT, IMAGES, ARCHIVES
 from sqlalchemy.orm import joinedload
@@ -10,7 +9,7 @@ from werkzeug.utils import secure_filename
 from app.user import user_bp
 from .utils import encrypt_file_content, allowed_file, decrypt_file_content
 from .. import db
-from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User
+from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User, Members
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -40,7 +39,7 @@ def new_folder():
         folder = os.path.join(user_upload_folder, secure_filename(original_name))
         if not os.path.exists(folder):
             os.makedirs(folder)
-            n_folder = Folder(name=original_name, path=folder)
+            n_folder = Folder(name=original_name, path=folder, owner=current_user.id)
             db.session.add(n_folder)
             db.session.commit()
 
@@ -56,7 +55,7 @@ def new_folder_in_folder(id_folder):
         child_folder = os.path.join(parent_folder.path, secure_filename(original_name))
         if not os.path.exists(child_folder):
             os.makedirs(child_folder)
-            n_folder = Folder(name=original_name, path=child_folder, parent_folder=id_folder)
+            n_folder = Folder(name=original_name, path=child_folder, parent_folder=id_folder, owner=current_user.id)
             db.session.add(n_folder)
             db.session.commit()
 
@@ -121,7 +120,7 @@ def icon_file_type(filename):
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
-    user_upload_folder = os.path.join(UPLOADED_PATH, 'user_' + current_user.get_id())
+    user_upload_folder = os.path.join(UPLOADED_PATH, 'user_' + current_user.id)
     if request.method == 'POST':
         if not os.path.exists(user_upload_folder):
             os.makedirs(user_upload_folder)
@@ -130,12 +129,9 @@ def handle_upload():
             file.filename = secure_filename(file.filename)
             if key.startswith('file') and allowed_file(file.filename):
                 file.save(os.path.join(user_upload_folder, file.filename))
-                # print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
                 encrypt_file_content(user_upload_folder + '\\' + file.filename)
-                # print((os.path.getsize(user_upload_folder + '\\' + file.filename)) / 1024)
                 file_size_stored = os.path.getsize(user_upload_folder + '\\' + file.filename)
                 file_type = icon_file_type(user_upload_folder + '\\' + file.filename)
-                # print('fichier de type : '+file_type)
                 n_file = File(
                     name=original_file_name,
                     path=user_upload_folder + '\\' + file.filename,
@@ -143,8 +139,6 @@ def handle_upload():
                     type=file_type,
                     owner=current_user.get_id()
                 )
-                #             description=simple_form.description.data,
-                #             owner=current_user.get_id())
                 db.session.add(n_file)
                 db.session.commit()
             elif not allowed_file(file.filename):
@@ -163,6 +157,14 @@ def download(id_file):
     return send_file(file.path, as_attachment=True)
 
 
+@user_bp.route('/open-file/<id_file>', methods=['GET'])
+@login_required
+def open_file(id_file):
+    file = File.query.filter_by(id=id_file).first()
+    decrypt_file_content(file.path)
+    return send_file(file.path)
+
+
 @user_bp.route('/download-many/<id_file>', methods=['GET'])
 @login_required
 def download_many(id_file):
@@ -179,6 +181,16 @@ def move_to_trash(id_file):
     file.delete_date = datetime.datetime.now().date()
     db.session.commit()
     return redirect(url_for('user_bp.my_files'))
+
+
+@user_bp.route('/folder-to-trash/<id_folder>', methods=['GET'])
+@login_required
+def move_folder_to_trash(id_folder):
+    folder = File.query.filter_by(id=id_folder).first()
+    folder.is_deleted = 1
+    folder.delete_date = datetime.datetime.now().date()
+    db.session.commit()
+    return redirect(url_for('user_bp.my_folders'))
 
 
 @user_bp.route('/restore/<id_file>', methods=['GET'])
@@ -220,20 +232,15 @@ def sub_folders(folder, n=1):
 @user_bp.route('folders', methods=['GET', 'POST'])
 @login_required
 def my_folders():
-    folders = Folder.query.filter_by(parent_folder=None).all()
+    folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
+    spaces = SharingSpace.query.all()
 
-    # for folder in folders:
-    #     print(folder.name)  # parent folder
-    #     sub_folders(folder)
-
-    return render_template('folders.html', title='Mes Dossiers', folders=folders)
-
-
-@user_bp.route('folder/<id_folder>', methods=['GET', 'POST'])
-@login_required
-def my_folder(id_folder):
-    folder = Folder.query.filter_by(parent_folder=None).options(joinedload('files'), joinedload('folders')).all()
-    return folder
+    return render_template(
+        'folders.html',
+        title='Mes Dossiers',
+        folders=folders,
+        spaces=spaces
+    )
 
 
 @user_bp.route('new-space', methods=['POST'])
@@ -252,8 +259,18 @@ def new_space():
 @user_bp.route('spaces', methods=['GET', 'POST'])
 @login_required
 def my_spaces():
-    spaces = SharingSpace.query.filter_by(is_archived=0).all()
-    return render_template('share-space.html', title='Mes Espaces', spaces=spaces)
+    spaces = SharingSpace.query.filter_by(is_archived=0, admin=current_user.id).all()
+    sp_mem = Members.query.filter_by(user=current_user.id).all()
+    guest_spaces = []
+    for id_space in sp_mem:
+        space = SharingSpace.query.filter_by(id=id_space.space, is_archived=0).first()
+        guest_spaces.append(space)
+    return render_template(
+        'share-space.html',
+        title='Mes Espaces',
+        spaces=spaces,
+        guest_spaces=guest_spaces
+    )
 
 
 @user_bp.route('space/<id_space>', methods=['GET', 'POST'])
@@ -263,16 +280,59 @@ def space_content(id_space):
     folders = Folder.query.filter_by(parent_folder=None).all()
     files = File.query.filter_by(folder=None).all()
     users = User.query.filter(User.id != current_user.get_id()).all()
-    space_folders = []
-    shared_folders = SpaceFolders.query.all()
-    for id_folder in shared_folders:
-        folder = Folder.query.filter_by(id=id_folder.folder).first()
-        space_folders.append(folder)
+
     return render_template(
         'space-content.html',
         title='Espace',
         space=space,
+        folders_to_share=folders,
+        files_to_share=files,
+        users=users
+    )
+
+
+@user_bp.route('space-folder/<id_space>', methods=['GET'])
+@login_required
+def shared_folders(id_space):
+    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
+    folders = Folder.query.filter_by(parent_folder=None).all()
+    files = File.query.filter_by(folder=None).all()
+    users = User.query.filter(User.id != current_user.get_id()).all()
+    space_folders = []
+    temp_folders = SpaceFolders.query.filter_by(space=id_space).all()
+    for id_folder in temp_folders:
+        folder = Folder.query.filter_by(id=id_folder.folder).first()
+        space_folders.append(folder)
+    return render_template(
+        'shared-folders.html',
+        title='Espace',
+        space=space,
         space_folders=space_folders,
+        folders_to_share=folders,
+        files_to_share=files,
+        users=users
+    )
+
+
+@user_bp.route('space-members/<id_space>', methods=['GET'])
+@login_required
+def space_members(id_space):
+    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
+    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
+    folders = Folder.query.filter_by(parent_folder=None).all()
+    files = File.query.filter_by(folder=None).all()
+    users = User.query.filter(User.id != current_user.get_id()).all()
+
+    s_members = Members.query.filter_by(space=id_space).all()
+    members = []
+    for id_user in s_members:
+        user = User.query.filter(id=id_user).first()
+        members.append(user)
+    return render_template(
+        'members.html',
+        title='Membres',
+        members=members,
+        space=space,
         folders_to_share=folders,
         files_to_share=files,
         users=users
@@ -290,10 +350,21 @@ def share_file():
     return redirect(url_for('user_bp.my_spaces'))
 
 
+@user_bp.route('add-member', methods=['POST'])
+@login_required
+def add_member():
+    member_id = request.form['member_id']
+    space_id = request.form['space_id']
+    member = Members(user=member_id, space=space_id)
+    db.session.add(member)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_spaces'))
+
+
 @user_bp.route('shared-files/<id_space>', methods=['GET'])
 @login_required
 def shared_files(id_space):
-    space = SharingSpace.query.filter_by(id=id_space).first()
+    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
     files = SpaceFiles.query.filter_by(space=id_space).all()
     space_files = []
     for id_file in files:

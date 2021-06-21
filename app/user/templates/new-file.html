@@ -1,40 +1,21 @@
 {% extends 'layout.html' %}
-{% block styles %}
-    {{ super() }}
-    <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
-{% endblock %}
 {% block content %}
     {{ super() }}
-    <style>
-        #singleFileInput .dropzone {
-            border: #262b40 2px dashed;
-            background-color: whitesmoke;
-            min-height: 250px;
-            height: 250px;
-            overflow: auto;
-            width: 100%;
-        }
-
-        #singleFileInput .dropzone::after {
-            border: #f1ab5c 2px dashed;
-            background-color: #f1ab5c;
-        }
-    </style>
     <div class="py-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
                 <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
-                <li class="breadcrumb-item"><a href="#">Nouveau</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Fichier</li>
+                <li class="breadcrumb-item"><a href="#">Fichiers</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nouveau Fichier</li>
             </ol>
         </nav>
         <div class="d-flex justify-content-between w-100 flex-wrap">
             <div class="mb-3 mb-lg-0">
-                <h1 class="h4">Vos fichiers et dossiers</h1>
-                <p class="mb-0">Créer vos nouveaux fichiers ici</p>
+                <h1 class="h4">Nouveaux fichiers</h1>
+                <p class="mb-0">Charger ou glissez vos nouveaux fichiers facilement</p>
             </div>
             <div>
-                <a href="#" class="btn btn-outline-gray"><i class="far fa-question-circle me-1"></i> Paramètres fichiers</a>
+                <a href="#" class="btn btn-outline-gray"><i class="far fa-question-circle me-1"></i> Fichiers acceptés</a>
             </div>
         </div>
     </div>
@@ -63,32 +44,4 @@
             </div>
         </div>
     </div>
-
-{% endblock %}
-{% block scripts %}
-    {{ super() }}
-    <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
-    <script>
-        Dropzone.options.demoUpload = {
-            addRemoveLinks: true,
-            uploadMultiple: true,
-            parallelUploads: 100,
-            autoProcessQueue: false,
-            dictRemoveFile: 'Effacer',
-            init: function () {
-                document.getElementById('loadSingleFile').addEventListener(
-                    'click', () => {
-                        this.processQueue();
-                    }
-                );
-
-                this.on('complete', (file) => {
-                   //this.addRemoveLinks :false;
-                    setTimeout(() => {
-                        this.removeFile(file);
-                    }, 3000);
-                });
-            },
-        }
-    </script>
 {% endblock %}

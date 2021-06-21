@@ -1,0 +1,232 @@
+<div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="h6 modal-title">Créer un dossier</h2>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('user_bp.new_folder') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label for="name">Nom du dossier</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Donnez un nom !
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="newSpaceModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="h6 modal-title">Créer un espace</h2>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('user_bp.new_space') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label for="name">Nom de l’espace</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><span class="fas fa-users"></span></span>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Donnez un nom !
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="message">Votre message</label>
+                        <textarea class="form-control" placeholder="Message" name="message"
+                                  rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary text-gray ms-auto" data-dismiss="modal">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% for file in files %}
+    <div class="modal modal-info fade" id="modal-{{ file.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="modalTitleNotify" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="py-3 text-white">
+                        <h2 class="h4 modal-title my-3">Important message!</h2>
+                        <p>Nom : {{ file.name }}</p>
+                        <p>Crée le : {{ file.creation_date }}</p>
+                        <p>Taille sur le serveur : {{ file.size }}</p>
+                        <p>Partagé : Oui/Non</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<!-- End of Modal Content -->
+<!-- Modal Content -->
+{% for file in files %}
+    <div class="modal fade" id="modal-share-{{ file.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="modalTitleNotify" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title" id="modalTitleNotify">Partager</p>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.share_file') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <input name="file_id" value="{{ file.id }}" hidden>
+                            <label for="space_id">Espace</label>
+                            <select class="form-select" id="country" name="space_id"
+                                    aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                {% for space in spaces %}
+                                    <option value="{{ space.id }}">{{ space.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% if space %}
+    <div class="modal fade" id="shareFolderModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Partager un dossier</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.share_folder') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <input name="space_id" value="{{ space.id }}" hidden>
+                            <label for="folder_id">Dossier</label>
+                            <select class="form-select" id="country" name="folder_id"
+                                    aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                {% for folder in folders_to_share %}
+                                    <option value="{{ folder.id }}">{{ folder.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Partager</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="shareFileModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Ajouter un fichier</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.share_file') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <input name="space_id" value="{{ space.id }}" hidden>
+                            <label for="file_id">Fichier</label>
+                            <select class="form-select" id="country" name="file_id" aria-label="Default select example">
+                                <option selected>Choisir le fichier</option>
+                                {% for file in files_to_share %}
+                                    <option value="{{ file.id }}">{{ file.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addMemberModal" tabindex="-1" role="dialog" aria-labelledby="modal-default"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="h6 modal-title">Ajouter un membre</h2>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.add_member') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <input name="space_id" value="{{ space.id }}" hidden>
+                            <label for="member_id">Utilsateurs</label>
+                            <select class="form-select" id="country" name="member_id"
+                                    aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.email }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}

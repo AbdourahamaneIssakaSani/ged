@@ -1,71 +1,66 @@
 {% extends 'layout.html' %}
 {% block content %}
     {{ super() }}
-     <style>
-        #singleFileInput .dropzone {
-            border: #262b40 2px dashed;
-            background-color: whitesmoke;
-            min-height: 250px;
-            height: 250px;
-            overflow: auto;
-            width: 100%;
-        }
-
-        .folder {
-            width: 10vw;
-            cursor: pointer;
-        }
-
-        .folder:hover {
-            background-color: rgba(195, 200, 229, 0.29);
-        }
-
-        .menu-label {
-            color: #7a7a7a;
-            font-size: 0.75em;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .menu-label:not(:first-child) {
-            margin-top: 1em;
-        }
-
-        .menu-label:not(:last-child) {
-            margin-bottom: 1em;
-        }
-
-        .file {
-        {#width: 100px;#} width: 10vw;
-        }
-
-        .file:hover {
-            background-color: rgba(195, 200, 229, 0.29);
-        }
-
-        .file-title {
-            width: 100%;
-            font-size: 0.9vw;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        .file-details {
-            font-size: 1.1vh;
-        }
-
-        #table {
-            display: none;
-        }
-    </style>
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Mes espaces</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dossiers partagés</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Mes propres espaces</h1>
+                <p class="mb-0">Le espaces que vous avez créés</p>
+            </div>
+            <div>
+                <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()"><i
+                        class="fas fa-list"></i></a>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid" id="folders">
         <div class="row">
             <!-- Folder List-->
-            {% for space in spaces%}
+            {% for space in spaces %}
                 <div class="col-1 p-3 m-3">
                     <a href="{{ url_for('user_bp.space_content',id_space=space.id) }}" class="folder wow fadeInDown"
-                         data-wow-delay="0.8s">
+                       data-wow-delay="0.8s">
+                        <div class="file-icon d-flex align-items-center justify-content-center">
+                            <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
+                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </a>
+                        </div>
+                        <div class="folder-structure">
+                            <div class="folder-title d-flex justify-content-center align-items-center">
+                                {{ space.name }}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            <!-- End of Folder List-->
+        </div>
+    </div>
+    <div class="d-flex justify-content-between w-100 flex-wrap">
+        <div class="mb-3 mb-lg-0">
+            <h1 class="h4">Mes espaces invités</h1>
+            <p class="mb-0">Le espaces dans lesquels vous êtes ajoutés</p>
+        </div>
+        <div>
+            <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()"><i
+                    class="fas fa-list"></i></a>
+        </div>
+    </div>
+    <div class="container-fluid" id="folders">
+        <div class="row">
+            <!-- Folder List-->
+            {% for space in guest_spaces %}
+                <div class="col-1 p-3 m-3">
+                    <a href="{{ url_for('user_bp.space_content',id_space=space.id) }}" class="folder wow fadeInDown"
+                       data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
                             <a href="#" style="position: relative; bottom: 30px; right: 20px;">

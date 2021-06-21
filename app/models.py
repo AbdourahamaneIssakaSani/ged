@@ -1,6 +1,6 @@
 import datetime
 from app import db, login_manager, bcrypt
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from sqlalchemy.dialects import mysql
 
 
@@ -76,6 +76,7 @@ class Folder(Object):
     folders = db.relationship('Folder')
     parent_folder = db.Column(db.Integer, db.ForeignKey(column='folder.id_folder', name='fk_folder_parent'),
                               nullable=True)
+    owner = db.Column(db.Integer, nullable=False)
 
 
 class Message(db.Model):
@@ -89,6 +90,7 @@ class SharingSpace(db.Model):
     __tablename__ = 'space'
     id = db.Column('id_space', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
+    admin = db.Column(db.Integer, nullable=False)
     is_archived = db.Column(db.Integer, default=0)
     members = db.relationship('Members')
     folders = db.relationship('SpaceFolders')
@@ -105,7 +107,7 @@ class Archive(db.Model):
 
 
 class Members(db.Model):
-    user = db.Column(db.Integer,  primary_key=True, autoincrement=False)
+    user = db.Column(db.Integer, primary_key=True, autoincrement=False)
     date_added = db.Column(db.DateTime, default=datetime.datetime.now())
     date_revoked = db.Column(db.DateTime)
     space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_members_space'))

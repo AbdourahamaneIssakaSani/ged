@@ -1,69 +1,25 @@
 {% extends 'layout.html' %}
-{% block styles %}
-    {{ super() }}
-    <link href="{{ url_for('static', filename='dist/css/dropzone.min.css') }}" rel="stylesheet">
-{% endblock %}
 {% block content %}
     {{ super() }}
-    <style>
-        #singleFileInput .dropzone {
-            border: #262b40 2px dashed;
-            background-color: whitesmoke;
-            min-height: 250px;
-            height: 250px;
-            overflow: auto;
-            width: 100%;
-        }
-
-        .folder {
-            width: 10vw;
-            cursor: pointer;
-        }
-
-        .folder:hover {
-            background-color: rgba(195, 200, 229, 0.29);
-        }
-
-        .menu-label {
-            color: #7a7a7a;
-            font-size: 0.75em;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .menu-label:not(:first-child) {
-            margin-top: 1em;
-        }
-
-        .menu-label:not(:last-child) {
-            margin-bottom: 1em;
-        }
-
-        div.file {
-        {#width: 100px;#} width: 10vw;
-        }
-
-        .file:hover {
-            background-color: rgba(195, 200, 229, 0.29);
-        }
-
-        div.file-title {
-            width: 100%;
-            font-size: 0.9vw;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        div.file-details {
-            font-size: 1.1vh;
-        }
-
-        #table {
-            display: none;
-        }
-
-    </style>
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Dossiers</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mes Dossiers</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Contenu des dossiers</h1>
+                <p class="mb-0">Les fichiers de chaque dossier cliqué sont affichés ci-dessous</p>
+            </div>
+            <div>
+                <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()"><i
+                        class="fas fa-list"></i></a>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid" id="folders">
         <!-- Folder List-->
         <div class="row">
@@ -73,9 +29,6 @@
                          data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
-                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </a>
                         </div>
                         <div class="folder-structure">
                             <div class="folder-title d-flex justify-content-center align-items-center">
@@ -88,152 +41,87 @@
         </div>
     </div>
     <!--Folder Contents-->
-    {% for folder in folders %}
-        {% macro folder_content(folder) %}
-            <div class="container-fluid folder-files" id="folder-content-{{ folder.id }}" style="display: none;">
-                <button class="btn btn-outline-secondary" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                    <i class="fas fa-plus"></i></button>
-                <div class="dropdown-menu" aria-labelledby="">
-                    <a class="dropdown-item" href="#new-file-modal-{{ folder.id }}" data-toggle="modal">
-                        <i class="fas fa-file-upload pr-2"></i>
-                        Fichiers
-                    </a>
-                    <a class="dropdown-item" href="#new-folder-modal-{{ folder.id }}" data-toggle="modal">
-                        <i class="fas fa-folder-plus pr-2"></i>
-                        Dossier
-                    </a>
-                    <a class="dropdown-item"
-                       href="">
-                        <i class="fas fa-cloud-download-alt pr-2"></i>
-                        Télécharger
-                    </a>
-                    <a class="dropdown-item" href="#">
-                        <i class="fas fa-share pr-2"></i>
-                        Partager
-                    </a>
-                    <a class="dropdown-item"
-                       href="">
-                        <i class="fas fa-trash-alt pr-2"></i>
-                        Supprimer
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#modal-{{ folder.id }}" data-toggle="modal">
-                        <i class="fas fa-info-circle pr-2"></i>
-                        Informations
-                    </a>
-                </div>
-                {% if folder.folders %}
-                    <div class="row">
-                        {% for child_folder in folder.folders %}
-                            <div class="col-1 p-3 m-3">
-                                <div class="folder wow fadeInDown"
-                                     ondblclick="displayFolderContent({{ child_folder.id }})"
-                                     data-wow-delay="0.8s">
-                                    <div class="file-icon d-flex align-items-center justify-content-center">
-                                        <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
-                                        <a href="#" style="position: relative; bottom: 30px; right: 20px;">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </a>
-                                    </div>
-                                    <div class="folder-structure">
-                                        <div class="folder-title d-flex justify-content-center align-items-center">
-                                            {{ child_folder.name }}
-                                        </div>
+    {% macro folder_content(folder) %}
+        <div class="container-fluid folder-files" id="folder-content-{{ folder.id }}" style="display: none;">
+            <button class="btn btn-outline-secondary" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fas fa-plus"></i></button>
+            <div class="dropdown-menu" aria-labelledby="">
+                <a class="dropdown-item" href="#new-file-modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-file-upload pr-2"></i>
+                    Fichiers
+                </a>
+                <a class="dropdown-item" href="#new-folder-modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-folder-plus pr-2"></i>
+                    Dossier
+                </a>
+                <a class="dropdown-item"
+                   href="">
+                    <i class="fas fa-cloud-download-alt pr-2"></i>
+                    Télécharger
+                </a>
+                <a class="dropdown-item" data-toggle="modal" href="#share-folder-modal-{{ folder.id }}">
+                    <i class="fas fa-share pr-2"></i>
+                    Partager
+                </a>
+                <a class="dropdown-item"
+                   href="{{ url_for('user_bp.move_folder_to_trash', id_folder=folder.id) }}">
+                    <i class="fas fa-trash-alt pr-2"></i>
+                    Supprimer
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#folder-info-modal-{{ folder.id }}" data-toggle="modal">
+                    <i class="fas fa-info-circle pr-2"></i>
+                    Informations
+                </a>
+            </div>
+            {% if folder.folders %}
+                <div class="row">
+                    {% for child_folder in folder.folders %}
+                        <div class="col-1 p-3 m-3">
+                            <div class="folder wow fadeInDown"
+                                 ondblclick="displayFolderContent({{ child_folder.id }})"
+                                 data-wow-delay="0.8s">
+                                <div class="file-icon d-flex align-items-center justify-content-center">
+                                    <i style="font-size: 10vh" class="fas primary-color fa-folder"></i>
+                                </div>
+                                <div class="folder-structure">
+                                    <div class="folder-title d-flex justify-content-center align-items-center">
+                                        {{ child_folder.name }}
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                <div id="grid">
-                    <div class="row">
-                        {% for file in folder.files %}
-                            <div class="col-1 p-2 m-3">
-                                <div class="file p-4" data-wow-delay="0.8s">
-                                    <div class="file-icon d-flex justify-content-around">
-                                        <i style="font-size: 10vh" class="fas fa-file{{ file.type }}"></i>
-                                        <div class="dropdown" style="position: relative; top: 3px;">
-                                            <a class="" id="" data-toggle="dropdown" aria-haspopup="true"
-                                               aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </a>
-                                            <div class="dropdown-menu" aria-labelledby="">
-                                                <a class="dropdown-item"
-                                                   href="{{ url_for('user_bp.download', id_file=file.id) }}">
-                                                    <i class="fas fa-cloud-download-alt pr-2"></i>
-                                                    Télécharger
-                                                </a>
-                                                <a class="dropdown-item" data-toggle="modal"
-                                                   href="#modal-share-{{ file.id }}">
-                                                    <i class="fas fa-share pr-2"></i>
-                                                    Partager
-                                                </a>
-                                                <a class="dropdown-item"
-                                                   href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
-                                                    <i class="fas fa-trash-alt pr-2"></i>
-                                                    Supprimer
-                                                </a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#modal-{{ file.id }}"
-                                                   data-toggle="modal">
-                                                    <i class="fas fa-info-circle pr-2"></i>
-                                                    Informations
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% if file.is_deleted==0 %}
-                                        <div class="file-info">
-                                            <div class="file-title text-break text-truncate">
-                                                {{ file.name }}
-                                            </div>
-                                            <div class="d-flex justify-content-between flex-row menu-label file-details">
-                                                <span>{{ file.creation_date }}</span>
-                                                <span>{{ file.size }}</span>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="table-responsive py-4" id="table">
-                    <table class="table table-flush table-hover" id="datatable">
-                        <thead class="thead-light">
-                        <tr>
-                            <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
-                            <th>Nom</th>
-                            <th></th>
-                            <th>Date de création</th>
-                            <th>Taille</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for file in folder.files %}
-                            <tr>
-                                <td class="p-3"><input type="checkbox" class="to-check"></td>
-                                <td class="d-flex flex-row">
-                                    <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file{{ file.type }}"></i>
-                                    </div>
-                                    <div class="p-2 text-wrap">
-                                        {{ file.name }}
-                                    </div>
-                                </td>
-                                <td class="p-3">
-                                    <div class="dropdown">
-                                        <a class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+            {% endif %}
+            <div id="grid">
+                <div class="row">
+                    {% for file in folder.files %}
+                        <div class="col-1 p-2 m-3">
+                            <div class="file p-4" data-wow-delay="0.8s">
+                                <div class="file-icon d-flex justify-content-around">
+                                    <i style="font-size: 10vh" class="fas fa-file{{ file.type }}"></i>
+                                    <div class="dropdown" style="position: relative; top: 3px;">
+                                        <a class="" id="" data-toggle="dropdown" aria-haspopup="true"
                                            aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <div class="dropdown-menu" aria-labelledby="">
+                                            {% if file.type=='-pdf' or file.type=='-image' or file.type=='-audio' or file.type=='-video' %}
+                                                <a class="dropdown-item"
+                                                   href="{{ url_for('user_bp.open_file', id_file=file.id) }}">
+                                                    <i class="fas fa-eye pr-2"></i>
+                                                    Ouvrir
+                                                </a>
+                                            {% endif %}
                                             <a class="dropdown-item"
                                                href="{{ url_for('user_bp.download', id_file=file.id) }}">
                                                 <i class="fas fa-cloud-download-alt pr-2"></i>
                                                 Télécharger
                                             </a>
-                                            <a class="dropdown-item" href="#">
+                                            <a class="dropdown-item" data-toggle="modal"
+                                               href="#modal-share-{{ file.id }}">
                                                 <i class="fas fa-share pr-2"></i>
                                                 Partager
                                             </a>
@@ -243,68 +131,296 @@
                                                 Supprimer
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
+                                            <a class="dropdown-item" href="#file-info-modal-{{ file.id }}"
+                                               data-toggle="modal">
                                                 <i class="fas fa-info-circle pr-2"></i>
                                                 Informations
                                             </a>
                                         </div>
                                     </div>
-                                </td>
-                                <td class="p-3">
-                                    {{ file.creation_date }}
-                                </td>
-                                <td class="p-3">
-                                    {{ file.size }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                                </div>
+                                {% if file.is_deleted==0 %}
+                                    <div class="file-info">
+                                        <div class="file-title text-break text-truncate">
+                                            {{ file.name }}
+                                        </div>
+                                        <div class="d-flex justify-content-between flex-row menu-label file-details">
+                                            <span>{{ file.creation_date }}</span>
+                                            <span>
+                                                {% if file.size<=1_000 %}
+                                                    {{ "%.2f"|format(file.size/1_000) }} Ko
+                                                {% else %}
+                                                    {{ "%.2f"|format(file.size/1_000_000) }} Mo
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% if folder.folders %}
-                {% for child_folder in folder.folders %}
-                    {{ folder_content(child_folder) }}
-                {% endfor %}
-            {% endif %}
-        {% endmacro %}
+            <div class="table-responsive py-4" id="table">
+                <table class="table table-flush table-hover" id="datatable">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
+                        <th>Nom</th>
+                        <th></th>
+                        <th>Date de création</th>
+                        <th>Taille</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in folder.files %}
+                        <tr>
+                            <td class="p-3"><input type="checkbox" class="to-check"></td>
+                            <td class="d-flex flex-row">
+                                <div class="p-2"><i class="fas fa-file{{ file.type }}"></i>
+                                </div>
+                                <div class="p-2 text-wrap">
+                                    {{ file.name }}
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                <div class="dropdown">
+                                    <a class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                       aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.download', id_file=file.id) }}">
+                                            <i class="fas fa-cloud-download-alt pr-2"></i>
+                                            Télécharger
+                                        </a>
+                                        <a class="dropdown-item" href="#modal-share-{{ file.id }}">
+                                            <i class="fas fa-share pr-2"></i>
+                                            Partager
+                                        </a>
+                                        <a class="dropdown-item"
+                                           href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
+                                            <i class="fas fa-trash-alt pr-2"></i>
+                                            Supprimer
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#file-info-modal-{{ file.id }}" data-toggle="modal">
+                                            <i class="fas fa-info-circle pr-2"></i>
+                                            Informations
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                {{ file.creation_date }}
+                            </td>
+                            <td class="p-3">
+                                {% if file.size<=1_000 %}
+                                    {{ "%.2f"|format(file.size/1_000) }} Ko
+                                {% else %}
+                                    {{ "%.2f"|format(file.size/1_000_000) }} Mo
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ folder_content(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
+    {% for folder in folders %}
         {{ folder_content(folder) }}
     {% endfor %}
     <!-- File Info Modal -->
+    {% macro share_folder_modal(folder) %}
+        <div class="modal modal-fullscreen fade" id="share-folder-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modalTitleNotify" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modalTitleNotify">Partager le dossier</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('user_bp.share_folder') }}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <input name="folder_id" value="{{ folder.id }}" hidden>
+                                <label for="space_id">Espace</label>
+                                <select class="form-select" id="country" name="space_id"
+                                        aria-label="Default select example">
+                                    <option selected>Open this select menu</option>
+                                    {% for space in spaces %}
+                                        <option value="{{ space.id }}">{{ space.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                    data-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ share_folder_modal(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
 
-    {% for folder in folders %}
-        {% macro new_file_modal(folder) %}
-            <div class="modal modal-fullscreen fade" id="new-file-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+    {% macro new_file_modal(folder) %}
+        <div class="modal modal-fullscreen fade" id="new-file-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modalTitleNotify" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
+                            <div class="col text-center">
+                                <div id="singleFileInput">
+                                    <form action="{{ url_for('user_bp.upload_in_folder', id_folder=folder.id) }}"
+                                          method="post"
+                                          enctype="multipart/form-data"
+                                          class="dropzone dz-clickable" id="inFolderUpload">
+                                        <div class="dz-message">
+                                            <div class="align-items-center">
+                                                <img class="img-fluid w-20" alt="" style="max-width: 200px"
+                                                     src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
+                                            </div>
+                                            Déposez votre fichier ici
+                                        </div>
+                                    </form>
+                                </div>
+                                <button type="submit" id="loadFileInFolder" class="btn btn-outline-dark" value="">
+                                    Charger
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ new_file_modal(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
+    <!-- End of File Info Modal -->
+    <!-- New Folder Modal-->
+    {% macro new_folder_modal(folder) %}
+        <div class="modal fade" id="new-folder-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modal-default"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Créer un dossier</h2>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('user_bp.new_folder_in_folder', id_folder=folder.id) }}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <label for="name">Nom du dossier</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Donnez un nom !
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                    data-dismiss="modal">Annuler
+                            </button>
+                            <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ new_folder_modal(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
+    {% macro folder_info_modal(folder) %}
+        <div class="modal fade" id="folder-info-modal-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modal-default"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="h6 modal-title">Informations du dossier</h2>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <p>folder info</p>
+                </div>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ new_folder_modal(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
+    {% macro share_file_modal(folder) %}
+        {% for file in folder.files %}
+            <div class="modal fade" id="modal-share-{{ file.id }}" tabindex="-1" role="dialog"
                  aria-labelledby="modalTitleNotify" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                            <p class="modal-title" id="modalTitleNotify">Partager</p>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-                            <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
-                                <div class="col text-center">
-                                    <div id="singleFileInput">
-                                        <form action="{{ url_for('user_bp.upload_in_folder', id_folder=folder.id) }}"
-                                              method="post"
-                                              enctype="multipart/form-data"
-                                              class="dropzone dz-clickable" id="inFolderUpload">
-                                            <div class="dz-message">
-                                                <div class="align-items-center">
-                                                    <img class="img-fluid w-20" alt="" style="max-width: 200px"
-                                                         src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
-                                                </div>
-                                                Déposez votre fichier ici
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <button type="submit" id="loadFileInFolder" class="btn btn-outline-dark" value="">
-                                        Charger
-                                    </button>
+                        <form action="{{ url_for('user_bp.share_file') }}" method="post">
+                            <div class="modal-body">
+                                <div class="mb-4">
+                                    <input name="file_id" value="{{ file.id }}" hidden>
+                                    <label for="space_id">Espace</label>
+                                    <select class="form-select" id="country" name="space_id"
+                                            aria-label="Default select example">
+                                        <option selected>Open this select menu</option>
+                                        {% for space in spaces %}
+                                            <option value="{{ space.id }}">{{ space.name }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
-                        </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                        data-dismiss="modal">
+                                    Annuler
+                                </button>
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer
+                                </button>
+                            </div>
+                        </form>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
                         </div>
@@ -313,204 +429,44 @@
             </div>
             {% if folder.folders %}
                 {% for child_folder in folder.folders %}
-                    <div class="modal modal-fullscreen fade" id="new-file-modal-{{ child_folder.id }}" tabindex="-1"
-                         role="dialog"
-                         aria-labelledby="modalTitleNotify" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
-                                    <button type="button" class="btn-close" data-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
-                                        <div class="col text-center">
-                                            <div id="singleFileInput">
-                                                <form action="{{ url_for('user_bp.upload_in_folder', id_folder=child_folder.id) }}"
-                                                      method="post"
-                                                      enctype="multipart/form-data"
-                                                      class="dropzone dz-clickable" id="inFolderUpload">
-                                                    <div class="dz-message">
-                                                        <div class="align-items-center">
-                                                            <img class="img-fluid w-20" alt="" style="max-width: 200px"
-                                                                 src="{{ url_for('static', filename='img/illustrations/undraw_new_entries_nh3h.svg') }}">
-                                                        </div>
-                                                        Déposez votre fichier ici
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <button type="submit" id="loadFileInFolder" class="btn btn-outline-dark"
-                                                    value="">
-                                                Charger
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{ new_file_modal(child_folder) }}
+                    {{ share_file_modal(child_folder) }}
                 {% endfor %}
             {% endif %}
-        {% endmacro %}
-        {{ new_file_modal(folder) }}
-    {% endfor %}
-
-    <!-- End of File Info Modal -->
-    <!-- New Folder Modal-->
-    {% for folder in folders %}
-        {% macro new_folder_modal(folder) %}
-            <div class="modal fade" id="new-folder-modal-{{ folder.id }}" tabindex="-1" role="dialog"
-                 aria-labelledby="modal-default"
-                 aria-hidden="true">
+        {% endfor %}
+    {% endmacro %}
+    {% macro file_info_modal(folder) %}
+        {% for file in folder.files %}
+            <div class="modal fade" id="file-info-modal-{{ file.id }}" tabindex="-1" role="dialog"
+                 aria-labelledby="modalTitleNotify" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h2 class="h6 modal-title">Créer un dossier</h2>
+                            <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form action="{{ url_for('user_bp.new_folder_in_folder', id_folder=folder.id) }}" method="post">
-                            <div class="modal-body">
-                                <div class="mb-4">
-                                    <label for="name">Nom du dossier</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
-                                        <input type="text" class="form-control" name="name" required>
-                                    </div>
-                                    <div class="invalid-feedback">
-                                        Donnez un nom !
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-primary text-gray ms-auto"
-                                        data-dismiss="modal">Annuler
-                                </button>
-                                <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer
-                                </button>
-                            </div>
-                        </form>
+                        <p>Deuss favere in amivadum!</p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                        </div>
                     </div>
                 </div>
             </div>
             {% if folder.folders %}
                 {% for child_folder in folder.folders %}
-                    <div class="modal fade" id="new-folder-modal-{{ folder.id }}" tabindex="-1" role="dialog"
-                         aria-labelledby="modal-default"
-                         aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h2 class="h6 modal-title">Créer un dossier</h2>
-                                    <button type="button" class="btn-close" data-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <form action="{{ url_for('user_bp.new_folder_in_folder', id_folder=child_folder.id) }}"
-                                      method="post">
-                                    <div class="modal-body">
-                                        <div class="mb-4">
-                                            <label for="name">Nom du dossier</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text"><span class="fas fa-folder-plus"></span></span>
-                                                <input type="text" class="form-control" name="name" required>
-                                            </div>
-                                            <div class="invalid-feedback">
-                                                Donnez un nom !
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
-                                                data-dismiss="modal">Annuler
-                                        </button>
-                                        <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i>
-                                            Créer
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    {{ new_folder_modal(child_folder) }}
+                    {{ file_info_modal(child_folder) }}
                 {% endfor %}
             {% endif %}
-        {% endmacro %}
+        {% endfor %}
+    {% endmacro %}
+
+    {% for folder in folders %}
         {{ new_folder_modal(folder) }}
+        {{ new_file_modal(folder) }}
+        {{ share_folder_modal(folder) }}
+        {{ folder_info_modal(folder) }}
+        {{ share_file_modal(folder) }}
+        {{ file_info_modal(folder) }}
     {% endfor %}
     <!-- End of New Folder Modal-->
-
 {% endblock %}
-{% block scripts %}
-    {{ super() }}
-    <script>
-        class Stack {
-            constructor() {
-                this.stack = [];
-            }
 
-            add(folderID) {
-                this.stack.push(folderID)
-            }
-
-            remove() {
-                return this.stack.pop()
-            }
-        }
-
-        let pile = new Stack()
-
-        function displayFolderContent(folderID) {
-            document.getElementById('folders').style.display = 'none';
-            let last = pile.remove();
-            if (last) document.getElementById(last).style.display = 'none';
-            document.getElementById('folder-content-' + folderID).style.display = 'block';
-            pile.add('folder-content-' + folderID)
-        }
-
-        function displayFolderList() {
-            let el = pile.remove();
-            el.style.display = 'block';
-        }
-
-        let folderLink = document.getElementsByClassName(' folder-link');
-        for (let i = 0; i < folderLink.length; i++) {
-            folderLink[i].addEventListener("click", () => {
-                    let el = document.getElementsByClassName('active-folder-link');
-                    let activeFolder = el ? el : null;
-                    if (activeFolder[0] != null || activeFolder[0] != undefined) {
-                        activeFolder[0].classList.remove('active-folder-link');
-                    }
-                    folderLink[i].classList.add('active-folder-link');
-
-                }
-            )
-        }
-        Dropzone.options.inFolderUpload = {
-            addRemoveLinks: true,
-            uploadMultiple: true,
-            parallelUploads: 100,
-            autoProcessQueue: false,
-            dictRemoveFile: 'Effacer',
-            init: function () {
-                document.getElementById('loadFileInFolder').addEventListener(
-                    'click', () => {
-                        this.processQueue();
-                    }
-                );
-
-                this.on('complete', (file) => {
-                    //this.addRemoveLinks :false;
-                    setTimeout(() => {
-                        this.removeFile(file);
-                    }, 3000);
-                });
-            },
-        }
-    </script>
-    <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
-
-{% endblock %}

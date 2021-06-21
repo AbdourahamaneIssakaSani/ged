@@ -1,6 +1,29 @@
 {% extends 'layout.html' %}
 {% block content %}
     {{ super() }}
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">{{ space.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Fichiers partagés</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Listes de mes fichiers ici</h1>
+                {% if space.admin==current_user.id %}
+                    <p class="mb-0">Les fichiers que vous avez partagés sont affichés ici</p>
+                {% else %}
+                    <p class="mb-0">Les fichiers partagés avec vous sont affichés ici</p>
+                {% endif %}
+            </div>
+            <div>
+                <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()">
+                    <i class="fas fa-list"></i></a>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid">
         <div id="grid">
             <div class="row">
