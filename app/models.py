@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     id = db.Column('id_user', db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(20))
     last_name = db.Column(db.String(20))
-    email = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(320), unique=True)
     password_hash = db.Column(db.String(256))
     files = db.relationship('File')
     messages = db.relationship('Message')
@@ -107,7 +107,10 @@ class Archive(db.Model):
 
 
 class Members(db.Model):
-    user = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    first_name = db.Column(db.String(20))
+    last_name = db.Column(db.String(20))
+    email = db.Column(db.String(320))
     date_added = db.Column(db.DateTime, default=datetime.datetime.now())
     date_revoked = db.Column(db.DateTime)
     space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_members_space'))

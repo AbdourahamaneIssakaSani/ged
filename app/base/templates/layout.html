@@ -179,6 +179,12 @@
                     </li>
                     {% if space %}
                         <li class="nav-item ">
+                            <a href="{{ url_for('user_bp.space_content',id_space=space.id) }}" class="nav-link">
+                                <span class="sidebar-icon"><span class="fas fa-users"></span></span>
+                                <span class="sidebar-text">Accueil</span>
+                            </a>
+                        </li>
+                        <li class="nav-item ">
                           <span class="nav-link collapsed d-flex justify-content-between align-items-center"
                                 data-toggle="collapse" data-target="#submenu-app">
                             <span>

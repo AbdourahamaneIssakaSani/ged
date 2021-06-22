@@ -216,7 +216,7 @@ def delete(id_file):
 @login_required
 def my_files():
     files = File.query.filter_by(owner=current_user.get_id(), is_deleted=0).all()
-    spaces = SharingSpace.query.all()
+    spaces = SharingSpace.query.all(admin=current_user.id)
     return render_template('files-list.html', title='Mes fichiers', files=files, spaces=spaces)
 
 
@@ -233,7 +233,7 @@ def sub_folders(folder, n=1):
 @login_required
 def my_folders():
     folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
-    spaces = SharingSpace.query.all()
+    spaces = SharingSpace.query.all(admin=current_user.id)
 
     return render_template(
         'folders.html',
@@ -260,7 +260,7 @@ def new_space():
 @login_required
 def my_spaces():
     spaces = SharingSpace.query.filter_by(is_archived=0, admin=current_user.id).all()
-    sp_mem = Members.query.filter_by(user=current_user.id).all()
+    sp_mem = Members.query.filter_by(id=current_user.id).all()
     guest_spaces = []
     for id_space in sp_mem:
         space = SharingSpace.query.filter_by(id=id_space.space, is_archived=0).first()
@@ -277,8 +277,8 @@ def my_spaces():
 @login_required
 def space_content(id_space):
     space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
-    folders = Folder.query.filter_by(parent_folder=None).all()
-    files = File.query.filter_by(folder=None).all()
+    folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
+    files = File.query.filter_by(folder=None, owner=current_user.id).all()
     users = User.query.filter(User.id != current_user.get_id()).all()
 
     return render_template(
@@ -296,8 +296,8 @@ def space_content(id_space):
 def shared_folders(id_space):
     space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
     folders = Folder.query.filter_by(parent_folder=None).all()
-    files = File.query.filter_by(folder=None).all()
-    users = User.query.filter(User.id != current_user.get_id()).all()
+    files = File.query.filter_by(folder=None, owner=current_user.id).all()
+    users = User.query.filter(User.id != current_user.id).all()
     space_folders = []
     temp_folders = SpaceFolders.query.filter_by(space=id_space).all()
     for id_folder in temp_folders:
@@ -318,16 +318,12 @@ def shared_folders(id_space):
 @login_required
 def space_members(id_space):
     space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
-    space = SharingSpace.query.filter_by(id=id_space, is_archived=0).first()
-    folders = Folder.query.filter_by(parent_folder=None).all()
-    files = File.query.filter_by(folder=None).all()
+    folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
+    files = File.query.filter_by(folder=None, owner=current_user.id).all()
     users = User.query.filter(User.id != current_user.get_id()).all()
 
-    s_members = Members.query.filter_by(space=id_space).all()
-    members = []
-    for id_user in s_members:
-        user = User.query.filter(id=id_user).first()
-        members.append(user)
+    members = Members.query.filter_by(space=id_space).all()
+
     return render_template(
         'members.html',
         title='Membres',
@@ -355,7 +351,9 @@ def share_file():
 def add_member():
     member_id = request.form['member_id']
     space_id = request.form['space_id']
-    member = Members(user=member_id, space=space_id)
+    user = User.query.filter_by(id=member_id).first()
+    member = Members(id=member_id, first_name=user.first_name, last_name=user.last_name, email=user.email,
+                     space=space_id)
     db.session.add(member)
     db.session.commit()
     return redirect(url_for('user_bp.my_spaces'))
