@@ -1,7 +1,7 @@
 import os.path
 import datetime
 
-from flask import render_template, request, redirect, url_for, send_file
+from flask import render_template, request, redirect, url_for, send_file, app
 from flask_login import login_required, current_user
 from flask_uploads import AUDIO, TEXT, IMAGES, ARCHIVES
 from sqlalchemy.orm import joinedload
@@ -9,11 +9,13 @@ from werkzeug.utils import secure_filename
 from app.user import user_bp
 from .utils import encrypt_file_content, allowed_file, decrypt_file_content
 from .. import db
+from .. import create_app
 from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User, Members
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-UPLOADED_PATH = os.path.join(basedir, 'uploads')
+UPLOAD_PATH = os.path.join(basedir, 'uploads')
+# UPLOAD_PROFILE_PHOTO_PATH = os.path.join(app.static_url_path, 'uploads')
 
 
 @user_bp.route('/dashboard', methods=['GET', 'POST'])
@@ -33,7 +35,7 @@ def new_file():
 def new_folder():
     if request.method == 'POST':
         original_name = request.form['name']
-        user_upload_folder = os.path.join(UPLOADED_PATH, 'user_' + current_user.get_id())
+        user_upload_folder = os.path.join(UPLOAD_PATH, 'user_' + current_user.get_id())
         if not os.path.exists(user_upload_folder):
             os.makedirs(user_upload_folder)
         folder = os.path.join(user_upload_folder, secure_filename(original_name))
@@ -120,7 +122,7 @@ def icon_file_type(filename):
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
-    user_upload_folder = os.path.join(UPLOADED_PATH, 'user_' + current_user.id)
+    user_upload_folder = os.path.join(UPLOAD_PATH, 'user_' + current_user.get_id())
     if request.method == 'POST':
         if not os.path.exists(user_upload_folder):
             os.makedirs(user_upload_folder)
@@ -387,10 +389,67 @@ def share_folder():
     return redirect(url_for('user_bp.my_spaces'))
 
 
+@user_bp.route('new-photo', methods=['POST'])
+@login_required
+def profile_photo():
+    print('enter')
+    profile_photo_folder = os.path.join(create_app().static_url_path, 'user_' + current_user.get_id())
+    if not os.path.exists(profile_photo_folder):
+        os.makedirs(profile_photo_folder)
+        print('mkdir')
+    for key, file in request.files.items():
+        file.filename = secure_filename(file.filename)
+        print('secure')
+        if key.startswith('file'):
+            file.filename = secure_filename(file.filename)
+            print('saviiiiiiiiiiiiiiing')
+            file.save(os.path.join(profile_photo_folder, file.filename))
+            user = User.query.filter_by(id=current_user.id).first()
+            user.photo = file.filename
+            db.session.commit()
+    return redirect(url_for('user_bp.settings'))
+
+
 @user_bp.route('settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    return render_template('settings.html', title='Paramètres')
+    settings_errors = {}
+    if request.form == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+        birthday = request.form['birthday']
+        gender = request.form['gender']
+        password = request.form['password']
+        new_password = request.form['new_password']
+        user = User.query.filter_by(id=current_user.id).first()
+        member = Members.query.filter_by(id=current_user.id).first()
+        if first_name:
+            user.first_name = first_name
+            member.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+            member.last_name = last_name
+        if email:
+            user.email = email
+            member.email = email
+        if phone:
+            user.phone = phone
+            member.phone = phone
+        if birthday:
+            user.birthday = birthday
+            member.birthday = birthday
+        if gender:
+            user.gender = gender
+            member.gender = gender
+        if new_password:
+            if user.verify_password(password):
+                user.password = new_password
+            else:
+                settings_errors.update({"password": "Mot de passe incorrect! Réessayez"})
+        db.session.commit()
+    return render_template('settings.html', title='Paramètres', settings_errors=settings_errors)
 
 
 @user_bp.route('trash', methods=['GET', 'POST'])

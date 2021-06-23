@@ -230,3 +230,37 @@
         </div>
     </div>
 {% endif %}
+<div class="modal modal-fullscreen fade" id="new-profile-photo" tabindex="-1" role="dialog"
+     aria-labelledby="modalTitleNotify" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title" id="modalTitleNotify">Changer votre photo de profile</p>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row align-items-center justify-content-center align-items-lg-start justify-content-lg-start">
+                    <div class="col text-center">
+                        <div id="singleFileInput">
+                            <form action="{{ url_for('user_bp.profile_photo') }}"
+                                  method="post"
+                                  enctype="multipart/form-data"
+                                  class="dropzone dz-clickable" id="inFolderUpload">
+                                <div class="dz-message">
+                                    <div class="align-items-center">
+                                        <span class="far fa-user-circle" alt="" style="font-size: 100px">
+                                        </span>
+                                    </div>
+                                    Déposez votre photo ici
+                                </div>
+                            </form>
+                        </div>
+                        <button type="submit" id="loadFileInFolder" class="btn btn-outline-dark" value="">
+                            Charger
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

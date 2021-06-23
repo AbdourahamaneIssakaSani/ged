@@ -13,7 +13,11 @@ class User(db.Model, UserMixin):
     id = db.Column('id_user', db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(20))
     last_name = db.Column(db.String(20))
+    gender = db.Column(db.String(12))
+    birthday = db.Column(db.Date)
+    phone = db.Column(db.String(20))
     email = db.Column(db.String(320), unique=True)
+    photo = db.Column(db.String(500))
     password_hash = db.Column(db.String(256))
     files = db.relationship('File')
     messages = db.relationship('Message')
@@ -54,7 +58,7 @@ class User(db.Model, UserMixin):
 class Object(db.Model):
     __abstract__ = True
     name = db.Column(db.String(256))
-    path = db.Column(db.String(256))
+    path = db.Column(db.String(500))
     size = db.Column(db.Integer)
     description = db.Column(mysql.LONGTEXT)
     creation_date = db.Column(db.DateTime, default=datetime.datetime.now().date())
@@ -65,7 +69,7 @@ class Object(db.Model):
 
 class File(Object):
     id = db.Column('id_file', db.Integer, primary_key=True, autoincrement=True)
-    type = db.Column(db.String(50))
+    type = db.Column(db.String(20))
     folder = db.Column(db.Integer, db.ForeignKey('folder.id_folder'), nullable=True)
     owner = db.Column(db.Integer, db.ForeignKey(column='user.id_user', name='fk_file_folder'))
 
@@ -111,6 +115,10 @@ class Members(db.Model):
     first_name = db.Column(db.String(20))
     last_name = db.Column(db.String(20))
     email = db.Column(db.String(320))
+    photo = db.Column(db.String(500))
+    gender = db.Column(db.String(12))
+    birthday = db.Column(db.Date)
+    phone = db.Column(db.String(20))
     date_added = db.Column(db.DateTime, default=datetime.datetime.now())
     date_revoked = db.Column(db.DateTime)
     space = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_members_space'))
