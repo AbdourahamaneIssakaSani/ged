@@ -410,6 +410,7 @@
     {% include 'includes/modal-boxes.html' %}
     {% block scripts %}
         {{ super() }}
+        {% include 'scripts.html' %}
         <script src="{{ url_for('static', filename='dist/js/base.min.js') }}"></script>
         <script src="{{ url_for('static', filename='dist/js/dropzone.min.js') }}"></script>
         <script src="{{ url_for('static', filename='dist/js/myScripts.js') }}"></script>

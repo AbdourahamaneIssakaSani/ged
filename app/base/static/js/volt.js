@@ -266,7 +266,7 @@ d.addEventListener("DOMContentLoaded", function(event) {
 
     if(d.querySelector('.ct-chart-traffic-share')) {
         var data = {
-            series: [70, 20, 10]
+            series: [66.66, 33.34]
           };
           
           var sum = function(a, b) { return a + b };

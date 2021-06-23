@@ -1,5 +1,253 @@
 {% extends 'layout.html' %}
 {% block content -%}
     {{ super() }}
-    <h1>here is the dashboard</h1>
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-between w-100 flex-wrap">
+            <div class="mb-3 mb-lg-0">
+                <h1 class="h4">Bienvenue dans NewDevFiles</h1>
+                <p class="mb-0">Enregistrer vos fichiers en toute simplicité</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-md-center">
+
+        <div class="col-12 col-sm-6 col-xl-8 mb-4">
+            <div class="card bg-secondary-alt shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-2 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            {#                            <canvas id="myChart" class="border-0" style="width:100%;max-width:700px"></canvas>#}
+                            <div class="ct-chart-test ct-series-a"></div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <h2 class="h5 mb-2">Comment vos données sont stockées ?</h2>
+                            <h6 class="fw-normal text-gray"><span class="icon w-20 icon-xs icon-secondary me-1"><span
+                                    class="fas fa-shield-alt"></span></span> Couche de cryptage ajoutée <a href="#" class="h6">33,34%</a></h6>
+                            <h6 class="fw-normal text-gray"><span class="icon w-20 icon-xs icon-primary me-1"><span
+                                    class="fas fa-database"></span></span> Taille initiale de vos données <a href="#" class="h6">66,66%</a>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon icon-shape icon-md icon-shape-primary rounded me-4 me-sm-0"><span class="fas fa-chart-line"></span></div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Stockage</h2>
+                                <h3 class="mb-1">345,678</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">Stockage</h2>
+                                <h3 class="mb-1">345 Go</h3>
+                            </div>
+                            <small>Feb 1 - Apr 1,  <span class="icon icon-small"><span class="fas fa-globe-europe"></span></span> WorldWide</small>
+                            <div class="small mt-2">
+                                <span class="fas fa-angle-up text-success"></span>
+                                <span class="text-success fw-bold">18.2%</span> Since last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon icon-shape icon-md icon-shape-primary rounded me-4 me-sm-0"><span
+                                    class="fas fa-cloud-upload-alt"></span></div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Taille totale de vos données</h2>
+                                <h3 class="mb-1">300 Go</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">Taille totale de vos données</h2>
+                                <h3 class="mb-1">300 Go</h3>
+                            </div>
+                            <small>
+                                <span class="icon icon-small"><span class="fas fa-file-alt text-primary"></span></span>
+                                 180 Go de fichiers
+                            </small>
+                            <div class="small mt-2">
+                                <span class="fas fa-shield-alt text-success"></span>
+                                <span class="text-success fw-bold">130 Go</span> de cryptage
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon icon-shape icon-md icon-shape-secondary rounded me-4"><span
+                                    class="fas fa-file-alt"></span></div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Fichiers</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">Fichiers</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                            <small>
+                                Feb 1 - Apr 1,
+                                <span class="icon icon-small"><span class="fas fa-globe-europe"></span></span> Worldwide
+                            </small>
+                            <div class="small mt-2">
+                                <span class="fas fa-share-square text-success"></span>
+                                <span class="text-success fw-bold">28</span> Fichiers partagés
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon icon-shape icon-md icon-shape-secondary rounded me-4"><span
+                                    class="fas fa-folder"></span></div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Dossiers</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">Dossiers</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                            <small>
+                                <span class="icon icon-small"><span class="fas fa-user"></span></span>
+                                50 fichiers
+                            </small>
+                            <div class="small mt-2">
+                                <span class="fas fa-share-square text-success"></span>
+                                <span class="text-success fw-bold">28 </span> dossiers partagés
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4 mb-4">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <div class="row d-block d-xl-flex align-items-center">
+                        <div class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center">
+                            <div class="icon icon-shape icon-md icon-shape-secondary rounded me-4"><span
+                                    class="fas fa-users"></span></div>
+                            <div class="d-sm-none">
+                                <h2 class="h5">Espaces</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7 px-xl-0">
+                            <div class="d-none d-sm-block">
+                                <h2 class="h5">Espaces</h2>
+                                <h3 class="mb-1">43,594</h3>
+                            </div>
+                            <small>
+                                <span class="icon icon-small"><span class="fas fa-globe-europe"></span></span> Worldwide</small>
+                                3 collaboarteurs
+                            <div class="small mt-2">
+                                <span class="fas fa-angle-up text-success"></span>
+                                <span class="text-success fw-bold">20</span> Dossiers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 {%- endblock content %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var chart = new Chartist.Pie('.ct-chart-test', {
+            series: [66.66, 33.34],
+            labels: ['66.66 %', '33.34 %']
+        }, {
+            donut: true,
+            donutWidth: 70,
+            donutSolid: false,
+            startAngle: 60,
+            showLabel: true
+        });
+
+        chart.on('draw', function (data) {
+            if (data.type === 'slice') {
+                // Get the total path length in order to use for dash array animation
+                var pathLength = data.element._node.getTotalLength();
+
+                // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+                data.element.attr({
+                    'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+                });
+
+                // Create animation definition while also assigning an ID to the animation for later sync usage
+                var animationDefinition = {
+                    'stroke-dashoffset': {
+                        id: 'anim' + data.index,
+                        dur: 1000,
+                        from: -pathLength + 'px',
+                        to: '0px',
+                        easing: Chartist.Svg.Easing.easeOutQuint,
+                        // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+                        fill: 'freeze'
+                    }
+                };
+
+                // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
+                if (data.index !== 0) {
+                    animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+                }
+
+                // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
+                data.element.attr({
+                    'stroke-dashoffset': -pathLength + 'px'
+                });
+
+                // We can't use guided mode as the animations need to rely on setting begin manually
+                // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
+                data.element.animate(animationDefinition, false);
+            }
+        });
+
+        // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
+        chart.on('created', function () {
+            if (window.__anim21278907124) {
+                clearTimeout(window.__anim21278907124);
+                window.__anim21278907124 = null;
+            }
+            window.__anim21278907124 = setTimeout(chart.update.bind(chart), 10000);
+        });
+
+    </script>
+{%- endblock scripts %}

@@ -21,6 +21,7 @@ UPLOAD_PATH = os.path.join(basedir, 'uploads')
 @user_bp.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
+
     return render_template('dashboard.html', title='Tableau de bord')
 
 
