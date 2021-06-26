@@ -15,14 +15,46 @@ from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolde
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 UPLOAD_PATH = os.path.join(basedir, 'uploads')
+
+
 # UPLOAD_PROFILE_PHOTO_PATH = os.path.join(app.static_url_path, 'uploads')
 
 
 @user_bp.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-
-    return render_template('dashboard.html', title='Tableau de bord')
+    user_upload_folder = os.path.join(UPLOAD_PATH, 'user_' + current_user.get_id())
+    total_size = 0
+    if os.path.exists(user_upload_folder):
+        for path, dirs, files in os.walk(user_upload_folder):
+            for f in files:
+                fp = os.path.join(path, f)
+                total_size += os.stat(fp).st_size
+    files_number = len(File.query.filter_by(folder=None, owner=current_user.id).all())
+    shared_files_number = len(File.query.filter_by(is_shared=1, owner=current_user.id).all())
+    folders_number = len(Folder.query.filter_by(owner=current_user.id).all())
+    folder_files_number = len(File.query.filter(File.folder is not None).filter_by(owner=current_user.id).all())
+    print('folder_files_number :')
+    print(folder_files_number)
+    shared_folders_number = len(Folder.query.filter_by(is_shared=1, owner=current_user.id).all())
+    spaces_number = len(SharingSpace.query.filter_by(admin=current_user.id).all())
+    archived_spaces_number = len(SharingSpace.query.filter_by(admin=current_user.id, is_archived=1).all())
+    members_number = 0
+    for member in Members.query.all():
+        members_number += len(SharingSpace.query.filter_by(id=member.space, admin=current_user.id).all())
+    return render_template(
+        'dashboard.html',
+        title='Tableau de bord',
+        total_size=total_size,
+        files_number=files_number,
+        shared_files_number=shared_files_number,
+        folders_number=folders_number,
+        folder_files_number=folder_files_number,
+        shared_folders_number=shared_folders_number,
+        spaces_number=spaces_number,
+        archived_spaces_number=archived_spaces_number,
+        members_number=members_number
+    )
 
 
 @user_bp.route('/new-file', methods=['GET', 'POST'])
@@ -219,7 +251,7 @@ def delete(id_file):
 @login_required
 def my_files():
     files = File.query.filter_by(owner=current_user.get_id(), is_deleted=0).all()
-    spaces = SharingSpace.query.all(admin=current_user.id)
+    spaces = SharingSpace.query.filter_by(admin=current_user.id).all()
     return render_template('files-list.html', title='Mes fichiers', files=files, spaces=spaces)
 
 
@@ -236,7 +268,7 @@ def sub_folders(folder, n=1):
 @login_required
 def my_folders():
     folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
-    spaces = SharingSpace.query.all(admin=current_user.id)
+    spaces = SharingSpace.query.filter_by(admin=current_user.id).all()
 
     return render_template(
         'folders.html',
@@ -344,6 +376,8 @@ def share_file():
     file_id = request.form['file_id']
     space_id = request.form['space_id']
     space_file = SpaceFiles(file=file_id, space=space_id)
+    file = File.query.filter_by(id=file_id).first()
+    file.is_shared = 1
     db.session.add(space_file)
     db.session.commit()
     return redirect(url_for('user_bp.my_spaces'))
@@ -385,6 +419,8 @@ def share_folder():
     folder_id = request.form['folder_id']
     space_id = request.form['space_id']
     space_folder = SpaceFolders(folder=folder_id, space=space_id)
+    folder = Folder.query.filter_by(id=folder_id).first()
+    folder.is_shared = 1
     db.session.add(space_folder)
     db.session.commit()
     return redirect(url_for('user_bp.my_spaces'))
@@ -395,6 +431,8 @@ def share_folder():
 def profile_photo():
     print('enter')
     profile_photo_folder = os.path.join(create_app().static_url_path, 'user_' + current_user.get_id())
+    profile_photo_folder = profile_photo_folder.replace('/', '\\')
+    print(profile_photo_folder)
     if not os.path.exists(profile_photo_folder):
         os.makedirs(profile_photo_folder)
         print('mkdir')
