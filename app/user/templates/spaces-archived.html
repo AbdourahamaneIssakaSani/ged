@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {{ super() }}
+    <div class="py-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
+                <li class="breadcrumb-item"><a href="#">Mes espaces</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Espaces archivés</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="container-fluid" id="folders">
+        <div class="row">
+            <!-- Folder List-->
+            {% for space in archived_spaces %}
+                <div class="col-1 p-3 m-3">
+                    <a href="#" class="folder wow fadeInDown"
+                       data-wow-delay="0.8s">
+                        <div class="file-icon d-flex align-items-center justify-content-center">
+                            <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
+                            <a class="" style="position: relative; bottom: 30px; right: 20px;" id="" data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </a>
+                            <div class="dropdown-menu mb-5 shadow-sm" aria-labelledby="">
+{#                                <a class="dropdown-item"#}
+{#                                   href="#">#}
+{#                                    <i class="fas fa- pr-2"></i>#}
+{#                                    {{ space.archive.archive_date }}#}
+{#                                </a>#}
+                                <a class="dropdown-item"
+                                   href="{{ url_for('user_bp.unarchive_space', id_space=space.id) }}">
+                                    <i class="fas fa-box-open pr-2"></i>
+                                    Retirer des archives
+                                </a>
+                            </div>
+                        </div>
+                        <div class="folder-structure">
+                            <div class="folder-title d-flex justify-content-center align-items-center">
+                                {{ space.name }}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            <!-- End of Folder List-->
+        </div>
+    </div>
+{% endblock %}

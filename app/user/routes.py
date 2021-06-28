@@ -1,16 +1,16 @@
 import os.path
 import datetime
 
-from flask import render_template, request, redirect, url_for, send_file, app
+from flask import render_template, request, redirect, url_for, send_file, app, flash
 from flask_login import login_required, current_user
 from flask_uploads import AUDIO, TEXT, IMAGES, ARCHIVES
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 from app.user import user_bp
-from .utils import encrypt_file_content, allowed_file, decrypt_file_content
+from .utils import encrypt_file_content, allowed_file, decrypt_file_content, icon_file_type
 from .. import db
 from .. import create_app
-from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User, Members
+from ..models import File, Folder, SharingSpace, Message, SpaceFiles, SpaceFolders, User, Members, Archive
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -34,8 +34,6 @@ def dashboard():
     shared_files_number = len(File.query.filter_by(is_shared=1, owner=current_user.id).all())
     folders_number = len(Folder.query.filter_by(owner=current_user.id).all())
     folder_files_number = len(File.query.filter(File.folder is not None).filter_by(owner=current_user.id).all())
-    print('folder_files_number :')
-    print(folder_files_number)
     shared_folders_number = len(Folder.query.filter_by(is_shared=1, owner=current_user.id).all())
     spaces_number = len(SharingSpace.query.filter_by(admin=current_user.id).all())
     archived_spaces_number = len(SharingSpace.query.filter_by(admin=current_user.id, is_archived=1).all())
@@ -123,35 +121,6 @@ def upload_in_folder(id_folder):
     return redirect(url_for('user_bp.my_folders'))
 
 
-def icon_file_type(filename):
-    file_extension = os.path.splitext(filename)[1]
-    file_extension = file_extension.replace('.', '')
-    supported_video_extensions = {"mp4", "webm", "mkv", "avi", "m4v", "m4p", "mpeg", "3gp"}
-    supported_office_word_extensions = {"doc", "docx"}
-    supported_office_powerpoint_extensions = {"ppt", "pptx"}
-    supported_office_excel_extensions = {"xls", "xlsx"}
-    if file_extension == 'pdf':
-        return '-pdf'
-    elif file_extension in AUDIO or file_extension == "m4a":
-        return '-audio'
-    elif file_extension in supported_video_extensions:
-        return '-video'
-    elif file_extension in TEXT:
-        return '-alt'
-    elif file_extension in IMAGES:
-        return '-image'
-    elif file_extension in ARCHIVES:
-        return '-archive'
-    elif file_extension in supported_office_word_extensions:
-        return '-word'
-    elif file_extension in supported_office_powerpoint_extensions:
-        return '-powerpoint'
-    elif file_extension in supported_office_excel_extensions:
-        return '-excel'
-    else:
-        return ' '
-
-
 @user_bp.route('/upload', methods=['POST'])
 @login_required
 def handle_upload():
@@ -182,6 +151,28 @@ def handle_upload():
                 print('nothing')
 
     return redirect(url_for('user_bp.new_file'))
+
+
+@user_bp.route('/describe-file', methods=['POST'])
+@login_required
+def describe_file():
+    file_id = request.form['file_id']
+    description = request.form['description']
+    file = File.query.filter_by(id=file_id).first()
+    file.description = description
+    db.session.commit()
+    return redirect(url_for('user_bp.my_files'))
+
+
+@user_bp.route('/describe-folder', methods=['POST'])
+@login_required
+def describe_folder():
+    folder_id = request.form['folder_id']
+    description = request.form['description']
+    folder = Folder.query.filter_by(id=folder_id).first()
+    folder.description = description
+    db.session.commit()
+    return redirect(url_for('user_bp.my_folders'))
 
 
 @user_bp.route('/download/<id_file>', methods=['GET'])
@@ -221,7 +212,7 @@ def move_to_trash(id_file):
 @user_bp.route('/folder-to-trash/<id_folder>', methods=['GET'])
 @login_required
 def move_folder_to_trash(id_folder):
-    folder = File.query.filter_by(id=id_folder).first()
+    folder = Folder.query.filter_by(id=id_folder).first()
     folder.is_deleted = 1
     folder.delete_date = datetime.datetime.now().date()
     db.session.commit()
@@ -237,12 +228,31 @@ def restore_file(id_file):
     return redirect(url_for('user_bp.trash'))
 
 
+@user_bp.route('/restore-folder/<id_folder>', methods=['GET'])
+@login_required
+def restore_folder(id_folder):
+    folder = Folder.query.filter_by(id=id_folder).first()
+    folder.is_deleted = 0
+    db.session.commit()
+    return redirect(url_for('user_bp.trash'))
+
+
 @user_bp.route('/delete/<id_file>', methods=['GET'])
 @login_required
 def delete(id_file):
     file = File.query.filter_by(id=id_file).first()
     os.remove(file.path)
     db.session.delete(file)
+    db.session.commit()
+    return redirect(url_for('user_bp.trash'))
+
+
+@user_bp.route('/delete-folder/<id_folder>', methods=['GET'])
+@login_required
+def delete_folder(id_folder):
+    folder = Folder.query.filter_by(id=id_folder).first()
+    os.remove(folder.path)
+    db.session.delete(folder)
     db.session.commit()
     return redirect(url_for('user_bp.trash'))
 
@@ -267,7 +277,7 @@ def sub_folders(folder, n=1):
 @user_bp.route('folders', methods=['GET', 'POST'])
 @login_required
 def my_folders():
-    folders = Folder.query.filter_by(parent_folder=None, owner=current_user.id).all()
+    folders = Folder.query.filter_by(parent_folder=None, is_deleted=0, owner=current_user.id).all()
     spaces = SharingSpace.query.filter_by(admin=current_user.id).all()
 
     return render_template(
@@ -306,6 +316,36 @@ def my_spaces():
         spaces=spaces,
         guest_spaces=guest_spaces
     )
+
+
+@user_bp.route('space-archive', methods=['GET', 'POST'])
+@login_required
+def archive():
+    # spaces = SharingSpace.query.filter_by(admin=current_user.id, is_archived=1).all()
+    archived_spaces = SharingSpace.query.filter_by(admin=current_user.id, is_archived=1).all()
+    return render_template('spaces-archived.html', title='Espaces archivés', archived_spaces=archived_spaces)
+
+
+@user_bp.route('to-archive/<id_space>', methods=['GET'])
+@login_required
+def archive_space(id_space):
+    space = SharingSpace.query.filter_by(id=id_space).first()
+    space.is_archived = 1
+    new_archive = Archive(space_archived=id_space)
+    db.session.add(new_archive)
+    db.session.commit()
+    return redirect(url_for('user_bp.archive'))
+
+
+@user_bp.route('undo-archive/<id_space>', methods=['GET'])
+@login_required
+def unarchive_space(id_space):
+    space = SharingSpace.query.filter_by(id=id_space).first()
+    space.is_archived = 0
+    space_archived = Archive.query.filter_by(space_archived=space.id).first()
+    db.session.delete(space_archived)
+    db.session.commit()
+    return redirect(url_for('user_bp.archive'))
 
 
 @user_bp.route('space/<id_space>', methods=['GET', 'POST'])
@@ -392,6 +432,15 @@ def add_member():
     member = Members(id=member_id, first_name=user.first_name, last_name=user.last_name, email=user.email,
                      space=space_id)
     db.session.add(member)
+    db.session.commit()
+    return redirect(url_for('user_bp.my_spaces'))
+
+
+@user_bp.route('remove-member/<id_member>', methods=['GET'])
+@login_required
+def remove_member(id_member):
+    member = Members.query.filter_by(id=id_member).first()
+    db.session.delete(member)
     db.session.commit()
     return redirect(url_for('user_bp.my_spaces'))
 
@@ -495,5 +544,5 @@ def settings():
 @login_required
 def trash():
     files = File.query.filter_by(owner=current_user.get_id(), is_deleted=1).all()
-    folders = Folder.query.filter_by(is_deleted=1).all()
+    folders = Folder.query.filter_by(is_deleted=1, owner=current_user.get_id()).all()
     return render_template('trash.html', title='Corbeille', files=files, folders=folders)

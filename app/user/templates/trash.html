@@ -1,65 +1,30 @@
 {% extends 'layout.html' %}
 {% block content %}
     {{ super() }}
-    <style>
-        .menu-label {
-            color: #7a7a7a;
-            font-size: 0.75em;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .menu-label:not(:first-child) {
-            margin-top: 1em;
-        }
-
-        .menu-label:not(:last-child) {
-            margin-bottom: 1em;
-        }
-
-        div.file {
-        {#width: 100px;#} width: 10vw;
-        }
-
-        .file:hover {
-            background-color: rgba(195, 200, 229, 0.29);
-        }
-
-        div.file-title {
-            width: 100%;
-            font-size: 0.9vw;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        div.file-details {
-            font-size: 1.1vh;
-        }
-
-    </style>
     <div class="">
-        <div class="table-responsive  table-sm py-4" id="table">
+        <div class="table-responsive  table-sm py-4">
+            <caption>Dossiers</caption>
             <table class="table table-flush table-hover" id="datatable">
                 <thead class="thead-light">
                 <tr>
-                    <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
                     <th>Nom</th>
-                    <th></th>
-                    <th>Date de création</th>
-                    <th>Taille</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                    <th>Crée le</th>
                     <th>Supprimé le</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for file in files %}
+                {% for folder in folders %}
                     <tr>
-                        <td class="p-3"><input type="checkbox" class="to-check"></td>
                         <td class="d-flex flex-row">
-                            <div class="p-2"><i style="color: #9C1A1C" class="fas fa-file-pdf"></i></div>
+                            <div class="p-2"><i class="fas fa-folder"></i></div>
                             <div class="p-2 text-wrap">
-                                {{ file.name }}
+                                {{ folder.name }}
                             </div>
+                        </td>
+                        <td class="p-3 text-wrap">
+                            {{ folder.description }}
                         </td>
                         <td class="p-3">
                             <div class="dropdown">
@@ -68,18 +33,71 @@
                                     <i class="fas fa-ellipsis-v"></i>
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="{{ url_for('user_bp.restore_file', id_file=file.id) }}">
-                                       <i class="fas fa-trash-restore-alt pr-2"></i>
+                                    <a class="dropdown-item"
+                                       href="{{ url_for('user_bp.restore_folder', id_folder=folder.id) }}">
+                                        <i class="fas fa-trash-restore-alt pr-2"></i>
+                                        Restaurer
+                                    </a>
+                                    <a class="dropdown-item" href="{{ url_for('user_bp.delete_folder', id_folder=folder.id) }}">
+                                        <i class="fas fa-trash-alt pr-2"></i>
+                                        Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            {{ folder.creation_date }}
+                        </td>
+                        <td class="p-3">
+                            {{ folder.delete_date }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="">
+        <div class="table-responsive  table-sm py-4">
+            <caption>Fichiers</caption>
+            <table class="table table-flush table-hover" id="datatable">
+                <thead class="thead-light">
+                <tr>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                    <th>Créé le</th>
+                    <th>Taille</th>
+                    <th>Supprimé le</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td class="d-flex flex-row">
+                            <div class="p-2"><i class="fas fa-file{{ file.type }}"></i></div>
+                            <div class="p-2 text-wrap">
+                                {{ file.name }}
+                            </div>
+                        </td>
+                        <td class="p-3 text-wrap">
+                            {{ file.description }}
+                        </td>
+                        <td class="p-3">
+                            <div class="dropdown">
+                                <a class="" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                   aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item"
+                                       href="{{ url_for('user_bp.restore_file', id_file=file.id) }}">
+                                        <i class="fas fa-trash-restore-alt pr-2"></i>
                                         Restaurer
                                     </a>
                                     <a class="dropdown-item" href="{{ url_for('user_bp.delete', id_file=file.id) }}">
                                         <i class="fas fa-trash-alt pr-2"></i>
                                         Supprimer
-                                    </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#modal-{{ file.id }}" data-toggle="modal">
-                                        <i class="fas fa-info-circle pr-2"></i>
-                                        Informations
                                     </a>
                                 </div>
                             </div>
@@ -88,12 +106,15 @@
                             {{ file.creation_date }}
                         </td>
                         <td class="p-3">
-                            {{ file.size }}
+                            {% if file.size<=1_000 %}
+                                {{ "%.2f"|format(file.size/1_000) }} Ko
+                            {% else %}
+                                {{ "%.2f"|format(file.size/1_000_000) }} Mo
+                            {% endif %}
                         </td>
                         <td class="p-3">
                             {{ file.delete_date }}
                         </td>
-
                     </tr>
                 {% endfor %}
                 </tbody>

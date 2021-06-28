@@ -368,6 +368,12 @@
                         </li>
                     {% endif %}
                     <li class="nav-item ">
+                        <a href="{{ url_for('user_bp.archive') }}" class="nav-link">
+                            <span class="sidebar-icon"><span class="fas fa-archive"></span></span>
+                            <span class="sidebar-text">Espace archivés</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
                         <a href="{{ url_for('user_bp.settings') }}" class="nav-link">
                             <span class="sidebar-icon"><span class="fas fa-cog"></span></span>
                             <span class="sidebar-text">Paramètres</span>

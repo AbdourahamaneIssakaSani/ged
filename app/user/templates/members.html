@@ -18,13 +18,9 @@
                     <p class="mb-0">Les membres sont les utilisateurs ajoutés par l’administrateur</p>
                 {% endif %}
             </div>
-            <div>
-                <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()">
-                    <i class="fas fa-list"></i></a>
-            </div>
         </div>
     </div>
-    <div class="card card-body shadow border-0 table-wrapper table-responsive">
+    <div class="card card-body shadow border-0 mb-3 table-wrapper table-responsive">
         <div class="input-group me-2 me-lg-3 fmxw-300">
             <span class="input-group-text"><span class="fas fa-search"></span></span>
             <input type="text" class="form-control" placeholder="Filtrer">
@@ -32,12 +28,6 @@
         <table class="table user-table table-hover align-items-center">
             <thead>
             <tr>
-                <th class="border-bottom">
-                    <div class="form-check dashboard-check">
-                        <input class="form-check-input" type="checkbox" value="" id="userCheck55">
-                        <label class="form-check-label" for="userCheck55"></label>
-                    </div>
-                </th>
                 <th class="border-bottom">Nom et Prénom</th>
                 <th class="border-bottom">Email</th>
                 <th class="border-bottom">Ajouté le</th>
@@ -50,23 +40,23 @@
             {% for member in members %}
                 <tr>
                     <td>
-                        <div class="form-check dashboard-check">
-                            <input class="form-check-input" type="checkbox" value="" id="userCheck1">
-                            <label class="form-check-label" for="userCheck1"></label>
-                        </div>
-                    </td>
-                    <td>
                         <a href="#" class="d-flex align-items-center">
-                            <img src="../assets/img/team/profile-picture-1.jpg" class="avatar rounded-circle me-3"
+                            <img src="{{ url_for('static', filename='img/team/profile-picture-2.jpg') }}" style="max-width: 40px" class="avatar img-fluid rounded-circle me-3"
                                  alt="Avatar">
-                            <div class="d-block"><span class="fw-bold">{{ member.first_name}} {{ member.last_name }}</span>
+                            <div class="d-block"><span
+                                    class="fw-bold">{{ member.first_name }} {{ member.last_name }}</span>
                                 <div class="small text-gray">info@example.com</div>
                             </div>
                         </a></td>
-                    <td><span class="fw-normal">{{ member.email}}</span></td>
+                    <td><span class="fw-normal">{{ member.email }}</span></td>
                     <td><span class="fw-normal">{{ member.date_added }}</span></td>
                     {% if space.admin==current_user.id %}
-                        <td><span class="fw-normal text-success">Active</span></td>
+                        <td>
+                            <a href="{{ url_for('user_bp.remove_member',id_member=member.id) }}">
+                                <span class="fas fa-user-minus"></span>
+                                Retirer
+                            </a>
+                        </td>
                     {% endif %}
                 </tr>
             {% endfor %}

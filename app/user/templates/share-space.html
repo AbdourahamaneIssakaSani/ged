@@ -6,7 +6,7 @@
             <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
                 <li class="breadcrumb-item"><a href="#"><span class="fas fa-home"></span></a></li>
                 <li class="breadcrumb-item"><a href="#">Mes espaces</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Dossiers partagés</li>
+                <li class="breadcrumb-item active" aria-current="page">Tous mes espaces</li>
             </ol>
         </nav>
         <div class="d-flex justify-content-between w-100 flex-wrap">
@@ -25,9 +25,17 @@
                        data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
-                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
+                            <a class="" style="position: relative; bottom: 30px; right: 20px;" id="" data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false">
                                 <i class="fas fa-ellipsis-h"></i>
                             </a>
+                            <div class="dropdown-menu mb-5 shadow-sm" aria-labelledby="">
+                                <a class="dropdown-item"
+                                   href="{{ url_for('user_bp.archive_space', id_space=space.id) }}">
+                                    <i class="fas fa-archive pr-2"></i>
+                                    Archiver
+                                </a>
+                            </div>
                         </div>
                         <div class="folder-structure">
                             <div class="folder-title d-flex justify-content-center align-items-center">
@@ -45,10 +53,6 @@
             <h1 class="h4">Mes espaces invités</h1>
             <p class="mb-0">Le espaces dans lesquels vous êtes ajoutés</p>
         </div>
-        <div>
-            <a class="btn btn-outline-gray" id="btnChangeView" onclick="changeView()"><i
-                    class="fas fa-list"></i></a>
-        </div>
     </div>
     <div class="container-fluid" id="folders">
         <div class="row">
@@ -59,9 +63,6 @@
                        data-wow-delay="0.8s">
                         <div class="file-icon d-flex align-items-center justify-content-center">
                             <i style="font-size: 10vh" class="fas primary-color fa-users"></i>
-                            <a href="#" style="position: relative; bottom: 30px; right: 20px;">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </a>
                         </div>
                         <div class="folder-structure">
                             <div class="folder-title d-flex justify-content-center align-items-center">

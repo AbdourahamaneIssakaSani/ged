@@ -1,5 +1,7 @@
+import os
+
 from cryptography.fernet import Fernet
-from flask_uploads import AllExcept, EXECUTABLES, SCRIPTS
+from flask_uploads import AllExcept, EXECUTABLES, SCRIPTS, AUDIO, TEXT, IMAGES, ARCHIVES
 
 ALLOWED_FILES = AllExcept(SCRIPTS + EXECUTABLES)
 
@@ -45,5 +47,34 @@ def decrypt_file_content(filename_with_path):
     with open(filename_with_path, 'wb') as decrypted_file:
         decrypted_file.write(decrypted_data)
         decrypted_file.close()
+
+
+def icon_file_type(filename):
+    file_extension = os.path.splitext(filename)[1]
+    file_extension = file_extension.replace('.', '')
+    supported_video_extensions = {"mp4", "webm", "mkv", "avi", "m4v", "m4p", "mpeg", "3gp"}
+    supported_office_word_extensions = {"doc", "docx"}
+    supported_office_powerpoint_extensions = {"ppt", "pptx"}
+    supported_office_excel_extensions = {"xls", "xlsx"}
+    if file_extension == 'pdf':
+        return '-pdf'
+    elif file_extension in AUDIO or file_extension == "m4a":
+        return '-audio'
+    elif file_extension in supported_video_extensions:
+        return '-video'
+    elif file_extension in TEXT:
+        return '-alt'
+    elif file_extension in IMAGES:
+        return '-image'
+    elif file_extension in ARCHIVES:
+        return '-archive'
+    elif file_extension in supported_office_word_extensions:
+        return '-word'
+    elif file_extension in supported_office_powerpoint_extensions:
+        return '-powerpoint'
+    elif file_extension in supported_office_excel_extensions:
+        return '-excel'
+    else:
+        return ' '
 
 # //TODO: Admin must allow all files extensions in the SETTINGS

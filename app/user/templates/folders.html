@@ -65,6 +65,11 @@
                     Partager
                 </a>
                 <a class="dropdown-item"
+                   href="#modal-describe-folder-{{ folder.id }}" data-toggle="modal">
+                    <i class="far fa-edit pr-2"></i>
+                    Décrire
+                </a>
+                <a class="dropdown-item"
                    href="{{ url_for('user_bp.move_folder_to_trash', id_folder=folder.id) }}">
                     <i class="fas fa-trash-alt pr-2"></i>
                     Supprimer
@@ -107,7 +112,7 @@
                                            aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="">
+                                        <div class="dropdown-menu mb-6 shadow-sm" aria-labelledby="">
                                             {% if file.type=='-pdf' or file.type=='-image' or file.type=='-audio' or file.type=='-video' %}
                                                 <a class="dropdown-item"
                                                    href="{{ url_for('user_bp.open_file', id_file=file.id) }}">
@@ -124,6 +129,11 @@
                                                href="#modal-share-{{ file.id }}">
                                                 <i class="fas fa-share pr-2"></i>
                                                 Partager
+                                            </a>
+                                            <a class="dropdown-item"
+                                               href="#file-describe-modal-{{ file.id }}" data-toggle="modal">
+                                                <i class="far fa-edit pr-2"></i>
+                                                Décrire
                                             </a>
                                             <a class="dropdown-item"
                                                href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
@@ -189,7 +199,7 @@
                                        aria-expanded="false">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </a>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div class="dropdown-menu mb-5 shadow-sm" aria-labelledby="dropdownMenuButton">
                                         <a class="dropdown-item"
                                            href="{{ url_for('user_bp.download', id_file=file.id) }}">
                                             <i class="fas fa-cloud-download-alt pr-2"></i>
@@ -200,12 +210,18 @@
                                             Partager
                                         </a>
                                         <a class="dropdown-item"
+                                           href="#file-describe-modal-{{ file.id }}" data-toggle="modal">
+                                            <i class="far fa-edit pr-2"></i>
+                                            Décrire
+                                        </a>
+                                        <a class="dropdown-item"
                                            href="{{ url_for('user_bp.move_to_trash', id_file=file.id) }}">
                                             <i class="fas fa-trash-alt pr-2"></i>
                                             Supprimer
                                         </a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#file-info-modal-{{ file.id }}" data-toggle="modal">
+                                        <a class="dropdown-item" href="#file-info-modal-{{ file.id }}"
+                                           data-toggle="modal">
                                             <i class="fas fa-info-circle pr-2"></i>
                                             Informations
                                         </a>
@@ -266,12 +282,10 @@
                                     data-dismiss="modal">
                                 Annuler
                             </button>
-                            <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer</button>
+                            <button type="submit" class="btn btn-secondary"><i class="fas fa-share"></i> Partager
+                            </button>
                         </div>
                     </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -313,9 +327,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
                     </div>
                 </div>
             </div>
@@ -375,19 +386,93 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2 class="h6 modal-title">Informations du dossier</h2>
+                        <h4 class="modal-title" id="modalTitleNotify"><i class="fas fa-info-circle"></i> Informations du
+                            Dossier</h4>
                         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <p>folder info</p>
+                    <div class="modal-body">
+                        <div class="py-3">
+                            <div class="table-responsive py-1">
+                                <table class="table table-clear">
+                                    <tbody>
+                                    <tr>
+                                        <td class="left "><strong>Nom</strong></td>
+                                        <td class="right text-wrap">{{ folder.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="left"><strong>Créé le</strong></td>
+                                        <td class="right">{{ folder.creation_date }}</td>
+                                    </tr>
+                                    <!--
+                                    <tr>
+                                        <td class="left"><strong>Taille sur le serveur </strong></td>
+                                        <td class="right">
+{#                                            {% if folder.size<=1_000 %}#}
+{#                                                {{ "%.2f"|format(folder.size/1_000) }} Ko#}
+{#                                            {% else %}#}
+{#                                                {{ "%.2f"|format(folder.size/1_000_000) }} Mo#}
+{#                                            {% endif %}#}
+                                        </td>
+                                    </tr>
+                                    -->
+                                    <tr>
+                                        <td class="left"><strong>Description</strong></td>
+                                        <td class="right text-wrap"><strong>{{ folder.description }}</strong></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         {% if folder.folders %}
             {% for child_folder in folder.folders %}
-                {{ new_folder_modal(child_folder) }}
+                {{ folder_info_modal(child_folder) }}
             {% endfor %}
         {% endif %}
     {% endmacro %}
+    {% macro folder_describe_modal(folder) %}
+        <div class="modal fade" id="modal-describe-folder-{{ folder.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="modal-default"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                 <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitleNotify">Description du Dossier</h4>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('user_bp.describe_folder') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label name="folder_id" class="text-muted text-truncate">
+                                {{ folder.name }}
+                            </label>
+                            <input name="folder_id" class="form-control" value="{{ folder.id }}" hidden>
+                            <textarea class="form-control" placeholder="Décrire..." name="description"
+                                      rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                data-dismiss="modal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-secondary"><i class="far fa-check-circle"></i> Valider
+                        </button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        {% if folder.folders %}
+            {% for child_folder in folder.folders %}
+                {{ folder_describe_modal(child_folder) }}
+            {% endfor %}
+        {% endif %}
+    {% endmacro %}
+
     {% macro share_file_modal(folder) %}
         {% for file in folder.files %}
             <div class="modal fade" id="modal-share-{{ file.id }}" tabindex="-1" role="dialog"
@@ -417,13 +502,10 @@
                                         data-dismiss="modal">
                                     Annuler
                                 </button>
-                                <button type="submit" class="btn btn-secondary"><i class="fas fa-plus"></i> Créer
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-share"></i> Partager
                                 </button>
                             </div>
                         </form>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -441,12 +523,42 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <p class="modal-title" id="modalTitleNotify">Informations du fichier</p>
+                            <h4 class="modal-title" id="modalTitleNotify"><i class="fas fa-info-circle"></i>
+                                Informations du
+                                fichier</h4>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <p>Deuss favere in amivadum!</p>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-primary">Go to Inbox</button>
+                        <div class="modal-body">
+                            <div class="py-3">
+                                <div class="table-responsive py-1">
+                                    <table class="table table-clear">
+                                        <tbody>
+                                        <tr>
+                                            <td class="left "><strong>Nom</strong></td>
+                                            <td class="right text-wrap">{{ file.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left"><strong>Créé le</strong></td>
+                                            <td class="right">{{ file.creation_date }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left"><strong>Taille sur le serveur </strong></td>
+                                            <td class="right">
+                                                {% if file.size<=1_000 %}
+                                                    {{ "%.2f"|format(file.size/1_000) }} Ko
+                                                {% else %}
+                                                    {{ "%.2f"|format(file.size/1_000_000) }} Mo
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="left"><strong>Description</strong></td>
+                                            <td class="right text-wrap"><strong>{{ file.description }}</strong></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -454,6 +566,47 @@
             {% if folder.folders %}
                 {% for child_folder in folder.folders %}
                     {{ file_info_modal(child_folder) }}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endmacro %}
+    {% macro file_describe_modal(folder) %}
+        {% for file in folder.files %}
+            <div class="modal fade" id="file-describe-modal-{{ file.id }}" tabindex="-1" role="dialog"
+                 aria-labelledby="modalTitleNotify" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="modalTitleNotify">Description du ficher</h4>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ url_for('user_bp.describe_file') }}" method="post">
+                            <div class="modal-body">
+                                <div class="mb-4">
+                                    <label name="file_id" class="text-muted text-truncate">
+                                        {{ file.name }}
+                                    </label>
+                                    <input name="file_id" class="form-control" value="{{ file.id }}" hidden>
+                                    <textarea class="form-control" placeholder="Décrire..." name="description"
+                                              rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                        data-dismiss="modal">
+                                    Annuler
+                                </button>
+                                <button type="submit" class="btn btn-secondary"><i class="far fa-check-circle"></i>
+                                    Valider
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% if folder.folders %}
+                {% for child_folder in folder.folders %}
+                    {{ file_describe_modal(child_folder) }}
                 {% endfor %}
             {% endif %}
         {% endfor %}
@@ -466,6 +619,8 @@
         {{ folder_info_modal(folder) }}
         {{ share_file_modal(folder) }}
         {{ file_info_modal(folder) }}
+        {{ file_describe_modal(folder) }}
+        {{ folder_describe_modal(folder) }}
     {% endfor %}
     <!-- End of New Folder Modal-->
 {% endblock %}

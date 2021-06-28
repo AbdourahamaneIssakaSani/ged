@@ -105,7 +105,7 @@ class SharingSpace(db.Model):
 
 class Archive(db.Model):
     id = db.Column('id_archive', db.Integer, primary_key=True, autoincrement=True)
-    archive_date = db.Column(db.DateTime)
+    archive_date = db.Column(db.DateTime, default=datetime.datetime.now())
     space_archived = db.Column(db.Integer, db.ForeignKey(column='space.id_space', name='fk_archive_space'),
                                nullable=True)
 
