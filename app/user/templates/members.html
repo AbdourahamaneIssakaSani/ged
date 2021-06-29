@@ -23,9 +23,9 @@
     <div class="card card-body shadow border-0 mb-3 table-wrapper table-responsive">
         <div class="input-group me-2 me-lg-3 fmxw-300">
             <span class="input-group-text"><span class="fas fa-search"></span></span>
-            <input type="text" class="form-control" placeholder="Filtrer">
+            <input type="text" onkeyup="filterTable()" id="filterInput" class="form-control" placeholder="Filtrer">
         </div>
-        <table class="table user-table table-hover align-items-center">
+        <table id="membersTable" class="table user-table table-hover align-items-center">
             <thead>
             <tr>
                 <th class="border-bottom">Nom et Prénom</th>
@@ -41,7 +41,8 @@
                 <tr>
                     <td>
                         <a href="#" class="d-flex align-items-center">
-                            <img src="{{ url_for('static', filename='img/team/profile-picture-2.jpg') }}" style="max-width: 40px" class="avatar img-fluid rounded-circle me-3"
+                            <img src="{{ url_for('static', filename='img/team/profile-picture-2.jpg') }}"
+                                 style="max-width: 40px" class="avatar img-fluid rounded-circle me-3"
                                  alt="Avatar">
                             <div class="d-block"><span
                                     class="fw-bold">{{ member.first_name }} {{ member.last_name }}</span>
@@ -77,4 +78,9 @@
             <div class="fw-normal small mt-4 mt-lg-0">Showing <b>5</b> out of <b>25</b> entries</div>
         </div>
     </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+</script>
 {% endblock %}

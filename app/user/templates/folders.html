@@ -438,32 +438,32 @@
              aria-labelledby="modal-default"
              aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
-                 <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="modalTitleNotify">Description du Dossier</h4>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form action="{{ url_for('user_bp.describe_folder') }}" method="post">
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <label name="folder_id" class="text-muted text-truncate">
-                                {{ folder.name }}
-                            </label>
-                            <input name="folder_id" class="form-control" value="{{ folder.id }}" hidden>
-                            <textarea class="form-control" placeholder="Décrire..." name="description"
-                                      rows="4"></textarea>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modalTitleNotify">Description du Dossier</h4>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('user_bp.describe_folder') }}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-4">
+                                <label name="folder_id" class="text-muted text-truncate">
+                                    {{ folder.name }}
+                                </label>
+                                <input name="folder_id" class="form-control" value="{{ folder.id }}" hidden>
+                                <textarea class="form-control" placeholder="Décrire..." name="description"
+                                          rows="4"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary text-gray ms-auto"
-                                data-dismiss="modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn btn-secondary"><i class="far fa-check-circle"></i> Valider
-                        </button>
-                    </div>
-                </form>
-            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary text-gray ms-auto"
+                                    data-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-secondary"><i class="far fa-check-circle"></i> Valider
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
         {% if folder.folders %}

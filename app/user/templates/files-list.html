@@ -92,7 +92,6 @@
             <table class="table table-flush table-hover" id="datatable">
                 <thead class="thead-light">
                 <tr>
-                    <th><input id="allCheckBoxes" onclick="checkAll()" type="checkbox"></th>
                     <th>Nom</th>
                     <th></th>
                     <th>Date de création</th>
@@ -102,7 +101,6 @@
                 <tbody>
                 {% for file in files %}
                     <tr>
-                        <td class="p-3"><input type="checkbox" class="to-check"></td>
                         <td class="d-flex flex-row">
                             <div class="p-2"><i class="fas fa-file{{ file.type }}"></i></div>
                             <div class="p-2 text-wrap">
@@ -165,7 +163,9 @@
             </table>
         </div>
     </div>
-
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
     <script>
         function checkAll() {
             if (document.getElementById('allCheckBoxes').checked) {

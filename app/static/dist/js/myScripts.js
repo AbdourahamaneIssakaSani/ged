@@ -99,3 +99,62 @@ Dropzone.options.inFolderUpload = {
         });
     },
 }
+function filterItems() {
+            let searchInput, filter, items, fileTitle, txtValue;
+            searchInput = document.getElementById("topbarInputIconLeft");
+            filter = searchInput.value.toUpperCase();
+            items = document.getElementsByClassName("col-1");
+
+            for (let i = 0; i < items.length; i++) {
+                fileTitle = items[i].getElementsByClassName("file-title")[0];
+                if (fileTitle) {
+                    txtValue = fileTitle.textContent || fileTitle.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        items[i].style.display = "";
+                    } else {
+                        items[i].style.display = "none";
+                    }
+                }
+            }
+            for (let i = 0; i < items.length; i++) {
+                fileTitle = items[i].getElementsByClassName("folder-title")[0];
+                if (fileTitle) {
+                    txtValue = fileTitle.textContent || fileTitle.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        items[i].style.display = "";
+                    } else {
+                        items[i].style.display = "none";
+                    }
+                }
+            }
+            let tr = document.getElementsByTagName("tr");
+            for (let i = 0; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+function filterTable() {
+        let input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("filterInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("membersTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
